@@ -15,10 +15,11 @@
 
 ## 2. 综合跨领域 Benchmark 套件
 
-| Benchmark | 年份 | 覆盖范围 | 特点 | 参考 |
-|-----------|------|---------|------|------|
-| **LLM Benchmarks in Life Sciences（综述）** | 2026 | 系统梳理：生物医学NLP（BioASQ/PubMedQA/MedMCQA）+药物设计（MoleculeNet/分子生成）+基因组与蛋白序列任务（DNA FM benchmarks/ProteinGym） | "目录索引"文章；帮助定位各子领域benchmark | [IntuitionLabs 2026](https://intuitionlabs.ai/articles/large-language-model-benchmarks-life-sciences-overview) |
-| **BEACON**（计划中） | 2026 | 统一生物与药物发现领域AI benchmarking；多实验室共享实验设计的"真实实验驱动"benchmark；跨模态跨任务统一leaderboard | 社区think tank + 开放评估平台；具体数据集建设中 | [BioPharma Trend 2026](https://www.biopharmatrend.com/news/beacon-launches-to-unite-ai-benchmarking-across-biology-and-drug-discovery-1507/) |
+| Benchmark | 年份 | 覆盖范围 | 规模 | 指标 | SOTA | 参考 |
+|-----------|------|---------|------|------|------|------|
+| **FrontierScience** | 2025 | 跨物理/化学/生物三科的PhD级科学推理；Olympiad轨（奥赛式短答）+ Research轨（真实科研子问题）；生物学含分子生物/生化/遗传推导 | 700+题（gold set 160题）；42名国际奥赛金牌 + 45名博士科学家出题 | 逐步打分（GPT-4o评估）；Olympiad准确率；Research部分分 | GPT-5.2：Olympiad **77%** / Research **25%** | [OpenAI FrontierScience](https://openai.com/index/frontierscience/) |
+| **LLM Benchmarks in Life Sciences（综述）** | 2026 | 系统梳理：生物医学NLP（BioASQ/PubMedQA/MedMCQA）+药物设计（MoleculeNet/分子生成）+基因组与蛋白序列任务（DNA FM benchmarks/ProteinGym） | — | — | "目录索引"文章；帮助定位各子领域benchmark | [IntuitionLabs 2026](https://intuitionlabs.ai/articles/large-language-model-benchmarks-life-sciences-overview) |
+| **BEACON**（计划中） | 2026 | 统一生物与药物发现领域AI benchmarking；多实验室共享实验设计的"真实实验驱动"benchmark；跨模态跨任务统一leaderboard | — | — | 社区think tank + 开放评估平台；具体数据集建设中 | [BioPharma Trend 2026](https://www.biopharmatrend.com/news/beacon-launches-to-unite-ai-benchmarking-across-biology-and-drug-discovery-1507/) |
 
 ---
 
