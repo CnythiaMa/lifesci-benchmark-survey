@@ -165,8 +165,9 @@ for record in SeqIO.parse("sequences.fasta", "fasta"):
 | Benchmark | 年份 | 任务 | 规模 | 指标 | SOTA | 参考 |
 |-----------|------|------|------|------|------|------|
 | **BioProBench** | 2025 | 生物实验协议理解与推理（多步实验操作） | 精心策划的协议数据集 | Accuracy, 推理步骤正确率 | GPT-4o: **~65%**；专门微调模型 ~70%；多步推理任务仍具挑战 | [arXiv 2505.07889](https://arxiv.org/html/2505.07889v2) |
+| **HeurekaBench / sc-HeurekaBench** | 2026（ICLR） | 半自动从论文+代码构建可验证评测三元组（D, Q, A）；单细胞生物学实例化：OEQ开放题+MCQ多选题 | 50 OEQs + 50 MCQs，来自 41 个经验证 insights，覆盖 13 篇 Nature/Cell 论文 | Accuracy（MCQ）；开放题评分 | 顶尖LLM 开放题仍有较大提升空间；MCQ准确率因模型而异 | [arXiv 2601.01678](https://arxiv.org/abs/2601.01678) · [代码](https://github.com/mlbio-epfl/HeurekaBench)（EPFL + ETH Zurich） |
 
-**任务类型**：多步推理（协议文本 → 步骤排序 / 错误纠正 / 方案生成）。
+**任务类型**：多步推理（协议文本 → 步骤排序 / 错误纠正 / 方案生成）；半自动 benchmark 构建（论文/代码 → 可验证 (D, Q, A) 三元组）。
 
 ```python
 # 输入：PCR 实验步骤（乱序）— 步骤排序任务（BioProBench ORD）
@@ -188,6 +189,28 @@ output_protocol = {
     "accuracy":        0.70,   # BioProBench 专门微调 SOTA
     # 生成任务（GEN）评测
     "BLEU_gen":  0.09,   # 所有基础模型 BLEU < 11%（⚠️ 方案生成仍具挑战）
+}
+
+# ── HeurekaBench：半自动构建 (D, Q, A) 三元组（sc-HeurekaBench 单细胞示例）─
+# 输入：论文 + 代码仓库 → 自动提取可验证 insight
+heureka_pipeline = {
+    "source_paper": "Nat. Methods 2023 — scRNA-seq 批次效应校正新方法",
+    "code_repo":    "https://github.com/example/scmethod",
+    "auto_extracted_insight": {
+        "dataset":   "PBMC 10k 单细胞数据集（D）",
+        "question":  "该方法在 PBMC 数据上校正批次效应后，哪种细胞类型的 cluster 纯度提升最显著？（Q）",
+        "answer":    "CD14+ 单核细胞，ARI 从 0.42 提升至 0.79（A，来自论文 Fig. 3b）",
+    },
+}
+
+# MCQ 评测示例（sc-HeurekaBench）
+input_heureka_mcq = {
+    "question": "在上述 PBMC 批次校正实验中，校正后 CD14+ 单核细胞的 ARI 约为多少？",
+    "options":  {"A": "0.42", "B": "0.61", "C": "0.79", "D": "0.91"},
+}
+output_heureka_mcq = {
+    "answer":   "C",   # ground-truth from paper
+    "source":   "论文 Fig. 3b，经代码复现验证",
 }
 ```
 
