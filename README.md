@@ -3,6 +3,12 @@
 > 目标：梳理现有 benchmark 的覆盖范围与水平，找到空白，为新 benchmark 的设计提供定位锚点。
 > 更新时间：2026-03
 
+## 🗺️ 交互式全景脑图
+
+**[→ 打开可交互脑图（节点可展开/收起）](https://cnythiama.github.io/lifesci-benchmark-survey/mindmap.html)**
+
+> 脑图覆盖全部 6 大领域 / 50+ benchmark，支持缩放、拖拽、节点折叠。需在浏览器中打开（GitHub Pages 托管）。
+
 ## 文件结构
 
 ```
