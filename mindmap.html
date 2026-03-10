@@ -6,41 +6,44 @@
   <title>生命科学 AI Benchmark 全景图</title>
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
-    html, body { width: 100%; height: 100%; background: #0d1117; }
+    html, body { width: 100%; height: 100%; background: #ffffff; }
     #toolbar {
       position: fixed; top: 0; left: 0; right: 0; z-index: 100;
       display: flex; align-items: center; gap: 10px;
       padding: 8px 16px;
-      background: rgba(22, 27, 34, 0.95);
+      background: rgba(255, 255, 255, 0.95);
       backdrop-filter: blur(8px);
-      border-bottom: 1px solid #30363d;
+      border-bottom: 1px solid #d0d7de;
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
     }
     #toolbar h1 {
-      font-size: 14px; font-weight: 600; color: #e6edf3;
+      font-size: 14px; font-weight: 600; color: #1a1a1a;
       white-space: nowrap;
     }
     #toolbar .sep { flex: 1; }
     #toolbar button {
-      padding: 4px 10px; border-radius: 6px; border: 1px solid #30363d;
-      background: #21262d; color: #c9d1d9; font-size: 12px; cursor: pointer;
+      padding: 4px 10px; border-radius: 6px; border: 1px solid #d0d7de;
+      background: #f6f8fa; color: #1a1a1a; font-size: 12px; cursor: pointer;
     }
-    #toolbar button:hover { background: #30363d; }
+    #toolbar button:hover { background: #e9ecef; }
     #mindmap-container {
       width: 100%; height: 100vh;
       padding-top: 42px;
     }
-    .markmap { width: 100%; height: 100%; }
+    .markmap { width: 100%; height: 100%; background: #ffffff; }
+    /* 强制脑图文字为黑色 */
+    .markmap svg text { fill: #1a1a1a !important; }
+    .markmap svg a { fill: #0969da !important; }
   </style>
 </head>
 <body>
   <div id="toolbar">
     <h1>🧬 生命科学 AI Benchmark 全景图</h1>
     <span class="sep"></span>
-    <button onclick="mm.fit()">适应屏幕</button>
-    <button onclick="mm.setOptions({initialExpandLevel: -1}); mm.setData(mm.state.data)">全展开</button>
-    <button onclick="mm.setOptions({initialExpandLevel: 1}); mm.setData(mm.state.data)">收起到一级</button>
-    <a href="README.md" style="padding:4px 10px; border-radius:6px; border:1px solid #30363d; background:#21262d; color:#c9d1d9; font-size:12px; text-decoration:none;">← README</a>
+    <button id="btn-fit">适应屏幕</button>
+    <button id="btn-expand">全展开</button>
+    <button id="btn-collapse">收起到一级</button>
+    <a href="README.md" style="padding:4px 10px; border-radius:6px; border:1px solid #d0d7de; background:#f6f8fa; color:#1a1a1a; font-size:12px; text-decoration:none;">← README</a>
   </div>
 
   <div id="mindmap-container">
@@ -331,14 +334,50 @@ markmap:
 
   <script src="https://cdn.jsdelivr.net/npm/markmap-autoloader@latest"></script>
   <script>
-    // After markmap renders, expose the instance for toolbar buttons
-    window.addEventListener('load', () => {
-      setTimeout(() => {
-        const svgEl = document.querySelector('.markmap svg');
-        if (svgEl && svgEl.__markmap) {
-          window.mm = svgEl.__markmap;
-        }
-      }, 1000);
+    // 递归设置所有节点 fold 状态
+    function setFoldAll(node, foldValue) {
+      if (!node) return;
+      if (!node.payload) node.payload = {};
+      node.payload.fold = foldValue;
+      (node.children || []).forEach(c => setFoldAll(c, foldValue));
+    }
+
+    // 仅展开到指定深度，超出则折叠
+    function setFoldToDepth(node, currentDepth, maxDepth) {
+      if (!node) return;
+      if (!node.payload) node.payload = {};
+      const hasChildren = node.children && node.children.length > 0;
+      node.payload.fold = (hasChildren && currentDepth >= maxDepth) ? 1 : 0;
+      (node.children || []).forEach(c => setFoldToDepth(c, currentDepth + 1, maxDepth));
+    }
+
+    // 轮询等待 markmap 实例就绪（autoloader 异步渲染，timing 不固定）
+    let mm = null;
+    const poll = setInterval(() => {
+      const svg = document.querySelector('.markmap svg');
+      if (svg && svg.__markmap) {
+        mm = svg.__markmap;
+        clearInterval(poll);
+      }
+    }, 100);
+
+    document.getElementById('btn-fit').addEventListener('click', () => {
+      if (mm) mm.fit();
+    });
+
+    document.getElementById('btn-expand').addEventListener('click', () => {
+      if (!mm) return;
+      setFoldAll(mm.state.data, 0);
+      mm.setData(mm.state.data);
+      setTimeout(() => mm.fit(), 100);
+    });
+
+    document.getElementById('btn-collapse').addEventListener('click', () => {
+      if (!mm) return;
+      // 保留根节点和一级展开，其余折叠
+      setFoldToDepth(mm.state.data, 0, 1);
+      mm.setData(mm.state.data);
+      setTimeout(() => mm.fit(), 100);
     });
   </script>
 </body>
