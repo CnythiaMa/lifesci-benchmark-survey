@@ -40,6 +40,8 @@
   <span class="sep"></span>
   <button id="btn-fit">适应屏幕</button>
   <button id="btn-expand">全展开</button>
+  <button id="btn-expand-one">多展开一级</button>
+  <button id="btn-collapse-one">收起一级</button>
   <button id="btn-collapse">收起到一级</button>
   <a href="README.md">← README</a>
 </div>
@@ -374,24 +376,86 @@ markmap:
     (node.children || []).forEach(c => collapseToDepth(c, cur + 1, max));
   }
 
+  // 多展开一级：找当前最浅的折叠层（BFS），展开该层所有节点
+  function expandOneLevel(root) {
+    let minFoldDepth = Infinity;
+    function findMin(node, depth) {
+      if (!node) return;
+      if (node.payload && node.payload.fold === 1) {
+        minFoldDepth = Math.min(minFoldDepth, depth);
+        return; // 不进入折叠节点内部
+      }
+      (node.children || []).forEach(c => findMin(c, depth + 1));
+    }
+    findMin(root, 0);
+    if (minFoldDepth === Infinity) return; // 已全展开
+
+    function unfold(node, depth) {
+      if (!node) return;
+      if (node.payload && node.payload.fold === 1) {
+        if (depth === minFoldDepth) node.payload.fold = 0;
+        return;
+      }
+      (node.children || []).forEach(c => unfold(c, depth + 1));
+    }
+    unfold(root, 0);
+  }
+
+  // 收起一级：找当前最深的展开层（有子节点），折叠该层所有节点
+  function collapseOneLevel(root) {
+    let maxExpandDepth = -1;
+    function findMax(node, depth) {
+      if (!node) return;
+      if (node.payload && node.payload.fold === 1) return; // 折叠节点不往里走
+      const hasKids = node.children && node.children.length > 0;
+      if (hasKids && depth > 0) maxExpandDepth = Math.max(maxExpandDepth, depth);
+      (node.children || []).forEach(c => findMax(c, depth + 1));
+    }
+    findMax(root, 0);
+    if (maxExpandDepth < 0) return; // 已全收起
+
+    function fold(node, depth) {
+      if (!node) return;
+      if (node.payload && node.payload.fold === 1) return;
+      if (depth === maxExpandDepth) {
+        if (!node.payload) node.payload = {};
+        node.payload.fold = 1;
+        return;
+      }
+      (node.children || []).forEach(c => fold(c, depth + 1));
+    }
+    fold(root, 0);
+  }
+
+  function applyAndFit() {
+    window.mm.setOptions({ initialExpandLevel: -1 });
+    window.mm.setData(window.mm.state.data);
+    setTimeout(() => window.mm.fit(), 150);
+  }
+
   // ---- 按钮绑定 ----
   document.getElementById('btn-fit').addEventListener('click', () => {
     window.mm.fit();
   });
 
   document.getElementById('btn-expand').addEventListener('click', () => {
-    // 禁用 initialExpandLevel 的自动折叠，否则 setData 内的 initializeData 会把深层节点重新折起
-    window.mm.setOptions({ initialExpandLevel: -1 });
     expandAll(window.mm.state.data);
-    window.mm.setData(window.mm.state.data);
-    setTimeout(() => window.mm.fit(), 150);
+    applyAndFit();
+  });
+
+  document.getElementById('btn-expand-one').addEventListener('click', () => {
+    expandOneLevel(window.mm.state.data);
+    applyAndFit();
+  });
+
+  document.getElementById('btn-collapse-one').addEventListener('click', () => {
+    collapseOneLevel(window.mm.state.data);
+    applyAndFit();
   });
 
   document.getElementById('btn-collapse').addEventListener('click', () => {
-    window.mm.setOptions({ initialExpandLevel: -1 });
     collapseToDepth(window.mm.state.data, 0, 1);
-    window.mm.setData(window.mm.state.data);
-    setTimeout(() => window.mm.fit(), 150);
+    applyAndFit();
   });
 })();
 </script>
