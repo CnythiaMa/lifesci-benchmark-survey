@@ -39,18 +39,7 @@
 
 ---
 
-## 4. 临床NLP专项 Benchmarks
-
-| Benchmark | 年份 | 任务 | 规模 | 指标 | SOTA | 参考 |
-|-----------|------|------|------|------|------|------|
-| **DRAGON** | 2025 | 临床NLP自动化标注pipeline评测（文档分类/信息抽取/临床事件检测） | 多种临床NLP任务 | F1, Precision | 最优pipeline F1 **~85%**（文档分类）；事件检测 ~78% | [npj Digital Medicine 2025](https://www.nature.com/articles/s41746-025-01626-x) |
-| **GLiNER-biomed** | 2025 | 开放域生物医学NER（无需为每个实体类型微调） | BC5CDR/NCBI Disease等标准NER集 | F1 | GLiNER-biomed: **F1 ~85%**（零样本）；可泛化到新实体类型 | [arXiv 2504.00676](https://arxiv.org/html/2504.00676v1) |
-| **CL4Health CT-DEB'26** | 2026 | 临床试验剂量错误检测 shared task | 临床试验文档 | Precision, Recall, F1 | 竞赛进行中；暂无公开SOTA | [bionlp.nlm.nih.gov](https://bionlp.nlm.nih.gov/cl4health2026/) |
-| **LLM医疗文本信息抽取基准** | 2026 | LLM-based信息抽取工具在医疗文本上的对比 | 多种医疗文本格式 | F1, ROUGE | GPT-4: **F1 ~82%**；传统NER微调 ~88%；LLM仍落后约6% | [medRxiv 2026](https://www.medrxiv.org/content/10.64898/2026.01.19.26344287v1.full-text) |
-
----
-
-## 5. 生物信息学推理与编程 Benchmarks
+## 4. 生物信息学推理与编程 Benchmarks
 
 | Benchmark | 年份 | 任务 | 规模 | 指标 | SOTA | 参考 |
 |-----------|------|------|------|------|------|------|
