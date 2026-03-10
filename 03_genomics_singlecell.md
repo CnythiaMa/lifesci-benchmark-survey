@@ -47,6 +47,8 @@
 | **scBench** | 2026 | AI智能体执行scRNA-seq分析工作流（聚类/注释/差异表达/伪时间等） | 394个可验证问题；6种测序平台；多个真实分析步骤 | 任务正确率，分析步骤合理性 | 最优AI agent任务正确率 **~65%**；复合步骤任务显著下降 | [arXiv 2602.09063](https://arxiv.org/html/2602.09063v1) |
 | **scSuperAnnotator** | 2025 | 细胞类型注释方法大规模横向比较 | 大规模多数据集平台 | 注释准确率，跨数据集一致性（Jaccard） | 最优监督方法准确率 **~90%**；零样本迁移 ~75% | [NAR 2025](https://academic.oup.com/nar/article/54/1/gkaf1470/8415836) |
 | **scRNA扰动预测基准** | 2024–2025 | 预测基因敲除/过表达后转录组变化 | Replogle Perturb-seq；Norman等 | Pearson r（delta表达） | ⚠️ **重磅（Nature Methods 2025）：所有FM均输给PCA/scVI基线（r ~0.35）；scGPT/Geneformer r ~0.22–0.28** | [Nat. Methods 2025](https://www.nature.com/articles/s41592-025-02772-6) |
+| **sc-HeurekaBench** | 2026 | 从13篇Nature/Cell单细胞论文（2024–2025）半自动构建的Agent评测；要求模型复现论文核心分析结论；50道开放题+50道MCQ；ICLR 2026 | 100题（50 OEQ + 50 MCQ）；来自41个论文insight | OEQ: 1–5分（GPT-4o评分）；MCQ: 准确率/召回率 | Biomni Agent: OEQ **2.31/5**，MCQ **50%**；BixBench-Agent: OEQ 2.34/5；CritiqAgent模块可提升开源模型 +22% | [arXiv 2601.01678](https://arxiv.org/abs/2601.01678) |
+| **Biomni-Eval1**（单细胞/基因组部分） | 2025 | GWAS因果基因识别（3数据源变体）、GWAS变异优先级排序、CRISPR靶点筛选基因检索；由Stanford Biomni团队构建 | 433题总计（GWAS相关子集：~1500训练/50测试） | 准确率（基因符号匹配） | Biomni Agent（Stanford）综合最优；具体分数未公开 | [HuggingFace biomni/Eval1](https://huggingface.co/datasets/biomni/Eval1) |
 
 **已知任务类型**：细胞聚类与类型注释 / 批次效应校正 / 差异基因表达分析 / 伪时间/轨迹推断 / 基因扰动效应预测 / 细胞通讯预测
 

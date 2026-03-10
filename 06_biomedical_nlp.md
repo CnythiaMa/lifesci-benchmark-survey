@@ -46,6 +46,7 @@
 | **Bioinfo-Bench** | 2023 | 生物信息学QA（多选题+开放题） | 200道题 | Accuracy | GPT-4: **>80%**（多选）；ChatGPT: ~60% | [arXiv 2310.00299](https://arxiv.org/abs/2310.00299) |
 | **BioCoder** | 2023 | 生物信息学编程（序列分析/比对/注释等） | 1,000+编程题 | Pass@1, Pass@10 | GPT-4 Pass@1 **~42%**；已知算法明显高于新算法设计 | [arXiv 2308.16458](https://arxiv.org/abs/2308.16458) |
 | **BioinformaticsBench** | 2024 | 9个生物信息学子领域推理（需外部知识/工具） | 多子领域 | Accuracy | GPT-4: **~68%**；工具调用能力是关键瓶颈 | — |
+| **Eubiota** | 2026 | 微生物组专项推理：药物对微生物生长影响（Drug-Imp）、微生物-宿主蛋白机制（MB-Mec）、蛋白功能（Prot-Func）、蛋白-基因映射（Prot-Gen）；基于MDIPID数据库 | ~100题/类别（6类）；每类3次独立运行 | Accuracy（%） | Eubiota专项系统: **87.7%** 综合（MB-Mec 94.0%，Prot-Gen 94.7%）；超GPT-5.1约10.4%；人类专家70.6%偏好Eubiota | [bioRxiv 2026.02.27](https://www.biorxiv.org/content/10.64898/2026.02.27.708412v1) |
 
 ## 当前空白
 

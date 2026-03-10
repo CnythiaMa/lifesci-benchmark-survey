@@ -47,5 +47,6 @@
 | **MedHELM** | 2024–持续 | 多维度临床任务（问答/摘要/诊断/安全性） | Stanford Health Care + Microsoft合作；覆盖多个临床场景 | 任务加权综合分 | GPT-4o/Claude-3.5-Sonnet领先；具体分数随版本更新 | [HELM Medical](https://crfm.stanford.edu/helm/medical/latest/) |
 | **HealthBench** | 2025 | 真实临床对话评估；5个维度（准确性/安全/沟通/推理/拒绝） | 5,000+医患对话；多维度评分 | 综合评分(0–100) | GPT-4o: **~72**；Claude-3.5: ~70；Gemini 1.5 Pro: ~68 | [OpenAI HealthBench](https://openai.com/index/healthbench/) |
 | **Open Medical-LLM Leaderboard** | 2023–持续 | MedQA/MedMCQA/PubMedQA/MMLU医学等六项综合分 | 多数据集合并评测 | Accuracy加权平均 | 持续更新；当前榜首平均 **~80%** | [HuggingFace Blog](https://huggingface.co/blog/leaderboard-medicalllm) |
+| **Biomni-Eval1**（临床/诊断部分） | 2025 | 罕见病诊断（给定表型+候选基因推断OMIM诊断）、患者因果基因检测（MyGene2数据集）、CRISPR递送方式选择 | 433题总计（罕见病116题/患者基因检测400题/CRISPR递送40题） | 准确率（OMIM ID匹配）；加权专家评分 | Biomni Agent（Stanford）综合最优；具体分数未公开披露 | [HuggingFace biomni/Eval1](https://huggingface.co/datasets/biomni/Eval1) |
 
 **当前水平小结**：医学MCQ已趋近饱和（USMLE ~91%）；专家级推理题差距显著（~45% vs 人类87%）；真实工作流任务（EHR操作、ICD编码）仍有大量提升空间；中文医学评测体系相对独立。
