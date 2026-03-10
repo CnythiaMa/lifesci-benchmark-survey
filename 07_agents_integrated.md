@@ -6,14 +6,14 @@
 
 | Benchmark | 年份 | 任务类型 | 规模 | 指标 | SOTA | 参考 |
 |-----------|------|---------|------|------|------|------|
-| **scBench** | 2026 | AI agents在单细胞RNA-seq分析工作流中的完整执行（聚类/注释/差异表达/伪时间） | 394个可验证问题；6种测序平台 | 任务成功率，步骤合理性 | 暂无公开排行榜分数 | [arXiv 2602.09063](https://arxiv.org/html/2602.09063v1) |
+| **scBench** | 2026 | AI agents在单细胞RNA-seq分析工作流中的完整执行（标准化/QC/聚类/细胞注释/差异表达）；平台差异影响与模型差异相当（最大40+百分点差距） | 394个可验证问题；6种测序平台；7类任务 | 准确率（各任务确定性评分） | Claude Opus 4.6 **52.8%** > Claude Opus 4.5 49.9% > GPT-5.2 45.2% > Claude Sonnet 4.5 44.2%；整体范围 29–53%；Normalization最易（最高83.8%），差异表达最难（最高41.4%） | [arXiv 2602.09063](https://arxiv.org/html/2602.09063v1) |
 | **MedAgentBench** | 2025 | LLM agents在虚拟EHR中执行真实任务（开医嘱/查实验室/更新记录）；Query（信息检索）+ Action（操作执行）双轨评测 | 300个临床任务（10类）；100名患者档案；700,000+数据元素；FHIR标准兼容 | 总体成功率 SR；Query SR；Action SR | Claude 3.5 Sonnet v2 **69.67%**（Query 85.33% / Action 54.00%）；GPT-4o 64.00%；DeepSeek-V3 62.67%；Gemini-1.5 Pro 62.00%；Hard任务所有模型均<25% | [NEJM AI](https://ai.nejm.org/doi/full/10.1056/AIdbp2500144) · [arXiv 2501.14654](https://arxiv.org/abs/2501.14654) |
 | **临床LLM智能体评测** | 2026 | LLM-based agent系统在临床任务中的多轮对话、决策支持 | 多轮临床场景 | 任务成功率，专家评分，安全性 | 暂无公开排行榜分数 | [Nat. Digital Medicine 2026](https://www.nature.com/articles/s41746-026-02443-6) |
 | **BioAgent Bench** | 2025 | AI agents在生物信息学中的能力与生物安全风险评估（序列分析/文献检索/实验设计） | 多种agent任务 + 风险相关任务 | 能力分，安全约束通过率 | 包含生物安全维度的罕见评测 | [EmergentMind](https://www.emergentmind.com/topics/bioagent-bench) |
 | **LAB-Bench** | 2024 | 实验室生物学研究基础能力：文献检索（LitQA2）、数据库查询（DbQA）、序列操作（SeqQA）、实验方案（ProtocolQA）、分子克隆工作流（CloningScenarios） | 2,457题（8类30子任务）；FutureHouse | Precision / Coverage | Claude 3.5 Sonnet最优；整体人类 ~69% > 模型 ~40–50%（SeqQA）；翻译效率子任务模型 **88% > 人类75%** | [arXiv 2407.10362](https://arxiv.org/abs/2407.10362) |
-| **BixBench** | 2025 | AI Agent在真实生信分析任务上的多步骤计算推理：探索生物数据集、执行Python/R/Bash分析流程、解读研究结论 | ~205题（60个真实Jupyter notebook capsule） | LLM自动评分（开放题）；准确率（MCQ） | GPT-4o / Claude 3.5 Sonnet均 **~17%**；MCQ与随机水平相当 ⚠️ | [arXiv 2503.00096](https://arxiv.org/abs/2503.00096) |
+| **BixBench** | 2025 | AI Agent在真实生信分析任务上的多步骤计算推理：探索生物数据集、执行Python/R/Bash分析流程、解读研究结论 | ~205题（60个真实Jupyter notebook capsule） | LLM自动评分（开放题）；准确率（MCQ） | 开放题：Claude 3.5 Sonnet **17%** > GPT-4o 9%；MCQ（含拒答选项）：低于随机水平 ⚠️ | [arXiv 2503.00096](https://arxiv.org/abs/2503.00096) |
 | **BioProBench** | 2025 | 生物实验Protocol理解与生成：方案问答（PQA）、步骤排序（ORD）、错误纠正（ERR）、Protocol生成（GEN）、链式推理（REA）；16个生物子领域 | 556,171题（26,933个人工协议） | PQA/ORD: Accuracy；ERR: F1；GEN: BLEU/Step Recall | PQA: Gemini-2.5-pro **70.27%**（ProAgent 85%）；ERR: DeepSeek-R1 F1 **64.03%**；GEN: BLEU<11%，所有基础模型 | [arXiv 2505.07889](https://arxiv.org/abs/2505.07889) |
-| **SciAgentGYM** | 2026 | LLM Agent多步骤科学工具调用：物理/化学/材料/生命科学4域，按步骤数分L1(≤3)/L2(4–7)/L3(≥8)三级难度 | 259任务/1,134子问题；1,780种领域专属工具 | 任务成功率（%） | GPT-5: **41.3%**（L1:60.6%, L3:30.9%）；Claude-Sonnet-4: 35.9% | [arXiv 2602.12984](https://arxiv.org/abs/2602.12984) |
+| **SciAgentGYM** | 2026 | LLM Agent多步骤科学工具调用：物理/化学/材料/生命科学4域，按步骤数分L1(≤3)/L2(4–7)/L3(≥8)三级难度；生命科学工具依赖性最强 | 259任务/1,134子问题；1,780种领域专属工具 | 任务成功率（%）；有/无工具对比 | GPT-5 **41.3%** > Grok-4-1 40.3% > Claude-Sonnet-4 35.9%（均含工具）；L1:60.6% / L3:30.9%（GPT-5）；生命科学平均 20.2% | [arXiv 2602.12984](https://arxiv.org/abs/2602.12984) |
 
 **任务类型**：多步工具调用 + 推理（自然语言任务描述 → 工具序列执行 → 结构化结论）。
 
