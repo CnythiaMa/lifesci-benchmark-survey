@@ -56,6 +56,8 @@ output = {
 
 **任务类型**：① 序列标注（临床文本 → 命名实体/关系）；② 智能体多步操作（自然语言任务 → EHR 工作流执行）。
 
+> **备注**：EHR = 电子健康档案（Electronic Health Record），是医疗机构对患者诊疗信息的数字化记录，涵盖病史、医嘱、检验结果、影像报告等。
+
 ```python
 # ── 子任务① 临床 NER / 去标识化（n2c2 / DRAGON）───────────────────────
 input_text = ("患者 John Smith，生于1978-03-15，就诊于 Mass General Hospital。"
