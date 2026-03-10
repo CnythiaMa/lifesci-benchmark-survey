@@ -7,7 +7,6 @@
 | **ClinVar致病变异基准** | 2024 | 区分致病SNP与常见SNP（零样本） | ClinVar致病变体 + gnomAD常见变体 | AUC | NT-v2: AUC **0.73**；Caduceus-Ph相当 | [Nat. Commun. 2025](https://www.nature.com/articles/s41467-025-65823-8) |
 | **QTL预测基准** | 2024 | 因果QTL变异效应（sQTL/ipaQTL/eQTL/pQTL） | GTEx及相关QTL数据集 | AUC, Cohen's d | AlphaGenome最佳：sQTL AUC **0.80**，ipaQTL **0.86** | [Nat. Commun. 2025](https://www.nature.com/articles/s41467-025-65823-8) |
 | **DNA基础模型5模型横评** | 2024–2025 | 序列分类/基因表达/变异效应/TAD识别 | 多基因组任务 | AUC, Spearman ρ | DNABERT-2, NT-v2, HyenaDNA, Caduceus-Ph, GROVER横向比较；任务依赖性差异大 | [bioRxiv 2024.08.16](https://www.biorxiv.org/content/10.1101/2024.08.16.608288v2) |
-
 | **AlphaGenome 26-benchmark suite** | 2025 | 26个变异效应预测任务（基因表达改变/剪接/polyA/增强子-基因作用等） | 多数据库整合 | AUC, Spearman ρ | AlphaGenome综合最优；最全面的单模型变异效应横评 | [PMC12851941](https://pmc.ncbi.nlm.nih.gov/articles/PMC12851941/) |
 
 **空白**：罕见变异功能效应（频率<0.001%）；RNA剪接变异机制解释；多变体协同效应。
@@ -33,7 +32,6 @@
 | **Nucleotide Transformer (NT)基准** | 2024 | 18个下游基因组任务（调控元件/剪接位点/染色质） | ENCODE, RefSeq注释 | MCC, F1, AUC | NT-v2 250M在调控任务强；SegmentNT在剪接位点和基因注释SOTA | [Nat. Methods 2024](https://www.nature.com/articles/s41592-024-02523-z) |
 | **SegmentNT / 核苷酸分辨率基因组注释** | 2024–2025 | 单核苷酸分辨率14类基因/调控区域注释 | 人类参考基因组 | 每类F1 | SegmentEnformer/SegmentBorzoi改善lncRNA/CTCF/启动子/增强子分割 | [bioRxiv 2024.03.14](https://www.biorxiv.org/content/10.1101/2024.03.14.584712v3.full) |
 | **调控变异因果预测** | 2024–2025 | 预测GWAS中因果非编码调控变异 | ENCODE精细定位变体 | AUC | Enformer衍生嵌入+微调竞争力强；AlphaGenome最优 | [PMC11844472](https://pmc.ncbi.nlm.nih.gov/articles/PMC11844472/) |
-
 | **长程DNA预测基准套件** | 2025 | 人/小鼠基因组多种实验信号轨迹（染色质可及性/组蛋白修饰），长程上下文 | ENCODE公共资源 | Pearson r, R² | 专为长程上下文模型（Enformer类）设计的标准化测试集 | [Nat. Commun. 2025](https://www.nature.com/articles/s41467-025-65077-4) |
 | **GFMBench-API** | 2026 | 基因组基础模型统一接口评测（监督+零样本） | DNA/表观基因组多种任务 | 多指标 | 首个为基因组FM提供标准化API接口的评测框架 | [bioRxiv 2026.02.19](https://www.biorxiv.org/content/10.64898/2026.02.19.706811v1.full.pdf) |
 
