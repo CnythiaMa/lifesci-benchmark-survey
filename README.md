@@ -14,8 +14,8 @@ leaderboard/
 ├── 04_clinical_medical.md         # 医学QA / 临床NLP / 诊断 / EHR / ICD编码 / DRAGON / GLiNER
 ├── 05_multimodal.md               # 医学影像VQA / MULAN / MedGemma / 多模态基础模型
 ├── 06_biomedical_nlp.md           # NER / RE / BLURB / BigBIO / 生物信息学编程
-├── 07_gap_analysis.md             # Gap分析：现有空白 → 新benchmark定位
-└── 08_agents_integrated.md        # AI智能体评测 / BEACON / 跨领域综合套件
+├── 07_agents_integrated.md        # AI智能体评测 / BEACON / 跨领域综合套件
+└── 08_gap_analysis.md             # Gap分析：现有空白 → 新benchmark定位
 ```
 
 ## 快速总览
