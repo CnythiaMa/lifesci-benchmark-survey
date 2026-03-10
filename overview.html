@@ -78,7 +78,7 @@
   <div class="filter-group">
     <span class="filter-label">筛选：</span>
     <button class="btn active" id="btn-all"    onclick="filter('all')">全部</button>
-    <button class="btn"        id="btn-spec"   onclick="filter('specialist')">🔬 精调专用</button>
+    <button class="btn"        id="btn-spec"   onclick="filter('specialist')">🔬 领域专用</button>
     <button class="btn"        id="btn-llm"    onclick="filter('llm')">🧠 LLM / Agent</button>
   </div>
   <a href="mindmap.html">🗺 脑图</a>
@@ -87,11 +87,12 @@
 
 <div id="stats">共 <b id="count">0</b> 个 Benchmark</div>
 
+<div id="main"></div>
 <div id="no-result">当前筛选条件下无结果</div>
 
 <script>
 // ─── 数据 ──────────────────────────────────────────────────────────────────
-// category: "specialist" = 精调专用   "llm" = LLM / Agent
+// category: "specialist" = 领域专用   "llm" = LLM / Agent
 const DATA = [
   // ── 01 蛋白质生物学 ────────────────────────────────────────────────────
   { domain:"01", name:"CASP14",         year:"2020",  task:"蛋白质3D结构预测",                scale:"~100 targets/届",                      metric:"GDT_TS, lDDT",        sota:"AlphaFold2 GDT_TS <b>92.4</b>",                                    refText:"PMC9299164",       refUrl:"https://pmc.ncbi.nlm.nih.gov/articles/PMC9299164/",          category:"specialist" },
@@ -253,7 +254,7 @@ function buildTable() {
       const tr = document.createElement("tr");
       tr.dataset.category = b.category;
       const tagClass = b.category === "specialist" ? "tag-specialist" : "tag-llm";
-      const tagText  = b.category === "specialist" ? "精调专用" : "LLM / Agent";
+      const tagText  = b.category === "specialist" ? "领域专用" : "LLM / Agent";
       tr.innerHTML = `
         <td><b>${b.name}</b></td>
         <td>${b.year}</td>
@@ -302,8 +303,6 @@ buildTable();
 filter("all");
 </script>
 
-<div id="main"></div>
-<div id="no-result">当前筛选条件下无结果</div>
 
 </body>
 </html>
