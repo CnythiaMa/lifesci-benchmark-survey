@@ -7,6 +7,7 @@
 | **CASP14** | 2020 | 3D结构预测（自由建模） | ~100 targets/届 | GDT_TS, TM-score, lDDT-Cα | AlphaFold2: GDT_TS **92.4**，sum-z-score 244 | [PMC9299164](https://pmc.ncbi.nlm.nih.gov/articles/PMC9299164/) |
 | **CASP15** | 2022 | 单链+复合体结构预测 | 100+ targets | GDT_TS, DockQ | 单链：AF2变体 TM-score **~0.92**；复合体：AF-Multimer DockQ ~0.60 | [PMC10792517](https://pmc.ncbi.nlm.nih.gov/articles/PMC10792517/) |
 | **CAMEO** | 持续 | 自动连续评测（每周新结构） | ~200 targets/周 | lDDT, QS-score | AF2-based方法平均 lDDT **>0.85**；长期占据排行榜前列 | [cameo3d.org](https://www.cameo3d.org/) |
+| **1.4M结构基准集** | 2025 | 结构质量/泛化性评估（大规模统计） | 140万经质量检查的蛋白结构 | 结构质量评分 | 非竞赛型工具集，无排行榜；为AF2/3等提供长期可更新测试集 | [Briefings Bioinformatics 2025](https://academic.oup.com/bib/article/26/2/bbaf104/8069415) |
 
 **空白**：蛋白质复合体预测（>2条链）、本征无序区域、共折叠蛋白动态构象。
 
@@ -24,7 +25,6 @@
 | **ProteinGLUE** | 2022 | 自监督蛋白建模，7个下游任务 | 多任务 | 各任务独立指标 | ESM-1b 在7任务中5个最优；二级结构 Q3 **~84%** | [Sci. Reports 2022](https://www.nature.com/articles/s41598-022-19608-4) |
 | **FLIP2** | 2026 | 蛋白质fitness landscape基准（扩展版） | 比FLIP更多蛋白+更多样选择压力 | 中位数 Spearman ρ | 竞赛进行中，暂无公开SOTA | [bioRxiv 2026.02.23](https://www.biorxiv.org/content/10.64898/2026.02.23.707496v1) |
 | **CAFA6** | 2026 | 蛋白质GO功能注释预测（竞赛） | 上百万未注释蛋白序列；时间切片后续注释为金标准 | F-max, S_min | Kaggle竞赛进行中，暂无公开SOTA | [Kaggle CAFA6](https://www.kaggle.com/competitions/cafa-6-protein-function-prediction) |
-| **1.4M结构基准集** | 2025 | 结构质量/泛化性评估（大规模统计） | 140万经质量检查的蛋白结构 | 结构质量评分 | 非竞赛型工具集，无排行榜；为AF2/3等提供长期可更新测试集 | [Briefings Bioinformatics 2025](https://academic.oup.com/bib/article/26/2/bbaf104/8069415) |
 
 **空白**：多蛋白体系功能、酶催化机制定量预测、蛋白-配体结合自由能。
 
