@@ -7,7 +7,7 @@
 | Benchmark | 年份 | 任务类型 | 规模 | 指标 | SOTA | 参考 |
 |-----------|------|---------|------|------|------|------|
 | **scBench** | 2026 | AI agents在单细胞RNA-seq分析工作流中的完整执行（聚类/注释/差异表达/伪时间） | 394个可验证问题；6种测序平台 | 任务成功率，步骤合理性 | 暂无公开排行榜分数 | [arXiv 2602.09063](https://arxiv.org/html/2602.09063v1) |
-| **MedAgentBench** | 2025 | LLM agents在虚拟EHR中执行真实任务（开医嘱/查实验室/更新记录） | 真实临床EHR任务集 | 任务完成率，临床准确性 | 暂无公开排行榜分数 | [NEJM AI](https://ai.nejm.org/doi/full/10.1056/AIdbp2500144) |
+| **MedAgentBench** | 2025 | LLM agents在虚拟EHR中执行真实任务（开医嘱/查实验室/更新记录）；Query（信息检索）+ Action（操作执行）双轨评测 | 300个临床任务（10类）；100名患者档案；700,000+数据元素；FHIR标准兼容 | 总体成功率 SR；Query SR；Action SR | Claude 3.5 Sonnet v2 **69.67%**（Query 85.33% / Action 54.00%）；GPT-4o 64.00%；DeepSeek-V3 62.67%；Gemini-1.5 Pro 62.00%；Hard任务所有模型均<25% | [NEJM AI](https://ai.nejm.org/doi/full/10.1056/AIdbp2500144) · [arXiv 2501.14654](https://arxiv.org/abs/2501.14654) |
 | **临床LLM智能体评测** | 2026 | LLM-based agent系统在临床任务中的多轮对话、决策支持 | 多轮临床场景 | 任务成功率，专家评分，安全性 | 暂无公开排行榜分数 | [Nat. Digital Medicine 2026](https://www.nature.com/articles/s41746-026-02443-6) |
 | **BioAgent Bench** | 2025 | AI agents在生物信息学中的能力与生物安全风险评估（序列分析/文献检索/实验设计） | 多种agent任务 + 风险相关任务 | 能力分，安全约束通过率 | 包含生物安全维度的罕见评测 | [EmergentMind](https://www.emergentmind.com/topics/bioagent-bench) |
 | **LAB-Bench** | 2024 | 实验室生物学研究基础能力：文献检索（LitQA2）、数据库查询（DbQA）、序列操作（SeqQA）、实验方案（ProtocolQA）、分子克隆工作流（CloningScenarios） | 2,457题（8类30子任务）；FutureHouse | Precision / Coverage | Claude 3.5 Sonnet最优；整体人类 ~69% > 模型 ~40–50%（SeqQA）；翻译效率子任务模型 **88% > 人类75%** | [arXiv 2407.10362](https://arxiv.org/abs/2407.10362) |
