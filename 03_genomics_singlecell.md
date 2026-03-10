@@ -1,4 +1,4 @@
-# 基因组学 & 单细胞/空间组学 Benchmarks
+# 基因组学 Benchmarks
 
 ## 1. 变异效应预测
 
