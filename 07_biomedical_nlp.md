@@ -28,7 +28,12 @@
 
 | Benchmark | 年份 | 覆盖范围 | 数据集数/任务数 | 指标 | SOTA / 特点 | 参考 |
 |-----------|------|---------|--------------|------|------------|------|
-| **BLURB** | 2020 | NER/PICO/RE/句子相似度/文档分类/QA | 13数据集×7任务 | F1, Accuracy | PubMedBERT建立基线；GPT-4在零/少样本下（NER/RE仍不如微调）2024年评测 | [medRxiv 2024](https://www.medrxiv.org/content/10.1101/2024.05.17.24307411v1) |
+| **BLUE** | 2019 | 生物医学NLP基础评测（BLURB前身）；NER/RE/相似度/推理 | 5个数据集 | F1, Accuracy | BlueBERT建立基线；已被BLURB取代 | [arXiv 1906.05474](https://arxiv.org/abs/1906.05474) |
+| **BLURB** | 2020 | NER/PICO/RE/句子相似度/文档分类/QA | 13数据集×7任务 | F1, Accuracy（BLURB综合分） | PubMedBERT: **82.91** BLURB综合分；GPT-4零/少样本仍低于微调模型 | [medRxiv 2024](https://www.medrxiv.org/content/10.1101/2024.05.17.24307411v1) |
+| **BIOSSES** | 2017 | 生物医学句子语义相似度 | 100对句子 | Pearson r | BioALBERT: **~0.90**；通用LLM ~0.85 | [BLURB评测](https://www.medrxiv.org/content/10.1101/2024.05.17.24307411v1) |
+| **MedNLI** | 2018 | 临床自然语言推理（蕴含/中立/矛盾） | MIMIC-III临床记录 | Accuracy | ClinicalBERT微调: **~82%** | [arXiv 1808.06752](https://arxiv.org/abs/1808.06752) |
+| **HoC（Hallmarks of Cancer）** | 2016 | 癌症标志文档分类（10类） | PubMed摘要 | Micro-F1 | BioBERT/PubMedBERT: **~70%** micro-F1 | [BLURB评测](https://www.medrxiv.org/content/10.1101/2024.05.17.24307411v1) |
+| **LitCovid** | 2020 | COVID-19文献主题分类（7类） | PubMed COVID文献 | F1 | 微调BERT类模型: F1 **~90%** | [PubMed 33040153](https://pubmed.ncbi.nlm.nih.gov/33040153/) |
 | **BigBIO** | 2022（NeurIPS） | NER/RE/QA/摘要/翻译，统一访问库 | 100+数据集，12任务，10+语言；76个NER数据集 | 任务特定 | 目前最大公开生物医学NLP集合；单元测试通过；程序化访问 | [NeurIPS 2022](https://proceedings.neurips.cc/paper_files/paper/2022/file/a583d2197eafc4afdd41f5b8765555c5-Paper-Datasets_and_Benchmarks.pdf) |
 | **BioNLP Benchmark Suite** | 2025（Nat. Commun.） | 12个基准×6个BioNLP应用 | 12数据集 | 多指标 | GPT/LLaMA零样本 vs. 微调BERT/BART；微调在NER/RE胜出；LLM在开放QA胜出 | [Nat. Commun. 2025](https://www.nature.com/articles/s41467-025-56989-2) |
 
@@ -42,6 +47,14 @@
 | **GLiNER-biomed** | 2025 | 开放域生物医学NER（无需为每个实体类型微调） | BC5CDR/NCBI Disease等标准NER集 | F1 | 高效零样本/少样本NER；可泛化到新实体类型 | [arXiv 2504.00676](https://arxiv.org/html/2504.00676v1) |
 | **CL4Health CT-DEB'26** | 2026 | 临床试验剂量错误检测 shared task | 临床试验文档 | Precision, Recall, F1 | 年度shared task；专注临床安全 NLP | [bionlp.nlm.nih.gov](https://bionlp.nlm.nih.gov/cl4health2026/) |
 | **LLM医疗文本信息抽取基准** | 2026 | LLM-based信息抽取工具在医疗文本上的对比 | 多种医疗文本格式 | F1, ROUGE | 专项评测LLM vs. 传统NER/RE方法的差距 | [medRxiv 2026](https://www.medrxiv.org/content/10.64898/2026.01.19.26344287v1.full-text) |
+
+## 4. 生物信息学推理与编程 Benchmarks（新增）
+
+| Benchmark | 年份 | 任务 | 规模 | 指标 | SOTA | 参考 |
+|-----------|------|------|------|------|------|------|
+| **Bioinfo-Bench** | 2023 | 生物信息学QA（多选题+开放题） | 200道题 | Accuracy | GPT-4: **>80%**（多选）；ChatGPT: ~60% | [arXiv 2310.00299](https://arxiv.org/abs/2310.00299) |
+| **BioCoder** | 2023 | 生物信息学编程（序列分析/比对/注释等） | 1,000+编程题 | Pass@k | GPT-4在已知算法上成功率高；新算法设计仍弱 | [arXiv 2308.16458](https://arxiv.org/abs/2308.16458) |
+| **BioinformaticsBench** | 2024 | 9个生物信息学子领域推理（需外部知识/工具） | 多子领域 | Accuracy | GPT-4预期领先；工具调用能力是关键瓶颈 | — |
 
 ## 当前空白
 

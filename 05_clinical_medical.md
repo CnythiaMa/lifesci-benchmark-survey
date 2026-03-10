@@ -35,4 +35,12 @@
 | **MAX-EVAL-11** | 2025 | ICD-11临床编码 | 含ICD-11标签的临床记录 | 加权分, 临床精确率 | Claude 4 Sonnet: **0.433**（43.3%精确率）；Gemini 2.5 Flash: 0.341 | [medRxiv 2025](https://www.medrxiv.org/content/10.1101/2025.10.30.25339130v1.full.pdf) |
 | **MedBench v4**（中文） | 2024–2025 | 24个主科+91个副科；MCQ+开放题+智能体任务 | 700,000+专家策划任务（500+机构） | Accuracy, 专家评级 | 云端动态评测防刷榜；防快捷学习 | [arXiv 2511.14439](https://arxiv.org/abs/2511.14439) |
 
+## 4. 整体医学LLM评估框架
+
+| Benchmark | 年份 | 覆盖范围 | 特点 | 参考 |
+|-----------|------|---------|------|------|
+| **MedHELM** | 2024–持续 | 整体医学LLM评估框架；多维度临床任务 | Stanford Health Care + Microsoft合作；超越单一MCQ；关注安全性和临床实用性 | [HELM Medical](https://crfm.stanford.edu/helm/medical/latest/) |
+| **HealthBench** | 2025 | 真实临床对话评估；多维度（准确性/安全/沟通） | 超越传统benchmark的多维框架；强调医患对话真实场景 | [OpenAI HealthBench](https://openai.com/index/healthbench/) |
+| **Open Medical-LLM Leaderboard** | 2023–持续 | MedQA/MedMCQA/PubMedQA/MMLU医学等综合分 | HuggingFace持续更新；公开可访问 | [HuggingFace Blog](https://huggingface.co/blog/leaderboard-medicalllm) |
+
 **当前水平小结**：医学MCQ已趋近饱和（USMLE ~91%）；真实工作流任务（EHR操作、ICD编码）仍有大量提升空间；中文医学评测体系相对独立。

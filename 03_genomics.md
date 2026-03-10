@@ -33,6 +33,7 @@
 | **SegmentNT / 核苷酸分辨率基因组注释** | 2024–2025 | 单核苷酸分辨率14类基因/调控区域注释 | 人类参考基因组 | 每类F1 | SegmentEnformer/SegmentBorzoi改善lncRNA/CTCF/启动子/增强子分割 | [bioRxiv 2024.03.14](https://www.biorxiv.org/content/10.1101/2024.03.14.584712v3.full) |
 | **调控变异因果预测** | 2024–2025 | 预测GWAS中因果非编码调控变异 | ENCODE精细定位变体 | AUC | Enformer衍生嵌入+微调竞争力强；AlphaGenome最优 | [PMC11844472](https://pmc.ncbi.nlm.nih.gov/articles/PMC11844472/) |
 | **长程DNA预测基准套件** | 2025 | 人/小鼠基因组多种实验信号轨迹（染色质可及性/组蛋白修饰），长程上下文 | ENCODE公共资源 | Pearson r, R² | 专为长程上下文模型（Enformer类）设计的标准化测试集 | [Nat. Commun. 2025](https://www.nature.com/articles/s41467-025-65077-4) |
-| **GFMBench-API** | 2026 | 基因组基础模型统一接口评测（监督+零样本） | DNA/表观基因组多种任务 | 多指标 | 首个为基因组FM提供标准化API接口的评测框架 | [bioRxiv 2026.02.19](https://www.biorxiv.org/content/10.64898/2026.02.19.706811v1.full.pdf) |
+| **GFMBench-API** | 2026 | 基因组基础模型统一接口评测（监督+零样本） | DNA/表观基因组多种任务 | 多指标 | 首个为基因组FM提供标准化API接口的评测框架 | [bioRxiv 2026.02.19](https://www.biorxiv.org/content/10.64898/2026.02.19.706811v1.full.pdf) | 
+| **DNA Long Bench / Genomics LRB** | 2025 | 长程DNA预测（最长1M bp上下文）；染色质/表观信号 | 多任务 | Pearson r, AUC | DNABERT-2最稳定；NT-v2在表观遗传检测最优；专为超长上下文模型设计 | [arXiv 2409.12641](https://arxiv.org/abs/2409.12641) |
 
 **空白**：3D基因组（Hi-C/TAD/loop）与调控变异整合预测；跨细胞类型增强子活性差异；非人物种基因组功能注释。
