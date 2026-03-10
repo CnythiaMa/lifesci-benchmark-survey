@@ -16,13 +16,108 @@
 **任务类型**：多步工具调用 + 推理（自然语言任务描述 → 工具序列执行 → 结构化结论）。
 
 ```python
-# 以 LAB-Bench 文献检索子任务（LitQA2）为例
-input_task = {
+# ── 示例① scBench：AI Agent 执行 scRNA-seq 完整分析工作流 ────────────────
+input_scbench = {
+    "task":     "对 10X Chromium PBMC 数据完成标准分析工作流",
+    "platform": "10X_Chromium",
+    "steps":    ["质控过滤", "标准化", "高变基因选择", "降维聚类", "细胞类型注释", "差异表达"],
+    "data":     "raw_counts_matrix.h5ad",   # AnnData 格式
+}
+
+output_scbench = {
+    "step_results": [
+        {"step": "QC",             "code": "sc.pp.filter_cells(adata, min_genes=200)...",
+                                   "correct": True},
+        {"step": "normalization",  "code": "sc.pp.normalize_total(adata, target_sum=1e4)...",
+                                   "correct": True},
+        {"step": "clustering",     "code": "sc.tl.leiden(adata, resolution=0.8)...",
+                                   "correct": True},
+        {"step": "annotation",     "code": "# 基于marker基因注释",
+                                   "correct": False,  "error": "将 NK 细胞误标为 CD8+ T"},
+        {"step": "DEG",            "code": "sc.tl.rank_genes_groups(adata, 'leiden')...",
+                                   "correct": True},
+    ],
+    "overall_accuracy": 0.528,   # Claude Opus 4.6 SOTA
+    # ⚠️ 平台差异影响巨大：同一模型在不同测序平台上最大差距 >40 百分点
+}
+
+# ── 示例② MedAgentBench：LLM Agent 在虚拟 EHR 中执行临床任务 ─────────────
+input_medagent = {
+    "task":      "为患者 P-0042 开具华法林 5mg 口服 每日一次",
+    "task_type": "Action",        # Action（操作执行）vs Query（信息检索）
+    "ehr_system": "FHIR-compatible virtual EHR",
+    "patient_id": "P-0042",
+}
+
+output_medagent = {
+    "agent_actions": [
+        {"action": "GET",  "endpoint": "/Patient/P-0042",
+         "result": "患者基本信息：65岁男性，房颤病史"},
+        {"action": "GET",  "endpoint": "/MedicationRequest?patient=P-0042",
+         "result": "当前用药列表（检查冲突）"},
+        {"action": "POST", "endpoint": "/MedicationRequest",
+         "body": {"medication": "warfarin 5mg", "dosage": "PO QD", "patient": "P-0042"},
+         "result": "医嘱创建成功"},
+    ],
+    "task_success": True,
+    # Query 任务（信息检索）成功率远高于 Action 任务（操作执行）
+    # Claude 3.5 Sonnet v2: Query 85.33% vs Action 54.00%
+    # Hard 任务所有模型均 <25%
+}
+
+# ── 示例③ SciAgentGYM：多步骤科学工具调用（生命科学域） ───────────────────
+input_sciagent = {
+    "task":       "使用 Biopython 获取人类 TP53 蛋白序列，用 BLAST 搜索同源序列，统计保守残基比例",
+    "domain":     "life_science",
+    "difficulty": "L2",           # L1(≤3步) / L2(4–7步) / L3(≥8步)
+    "available_tools": ["Biopython.Entrez", "BLAST_API", "pandas", "matplotlib"],
+}
+
+output_sciagent = {
+    "tool_calls": [
+        {"step": 1, "tool": "Biopython.Entrez.efetch",
+         "params": {"db": "protein", "id": "NP_000537.3", "rettype": "fasta"},
+         "result": "TP53 蛋白序列 393 aa"},
+        {"step": 2, "tool": "BLAST_API.blastp",
+         "params": {"query": "NP_000537.3", "database": "swissprot", "evalue": 1e-50},
+         "result": "87 条同源序列"},
+        {"step": 3, "tool": "BLAST_API.parse_alignment",
+         "params": {"alignments": "..."},
+         "result": "多序列比对矩阵 (87 × 393)"},
+        {"step": 4, "tool": "pandas.DataFrame.apply",
+         "params": {"func": "计算每列保守度"},
+         "result": "保守残基（>90%一致）：218/393 = 55.5%"},
+    ],
+    "final_answer": "TP53 在哺乳动物中有 55.5% 的高保守残基，集中于 DNA 结合域（残基 102–292）",
+    "task_success": True,
+    # 生命科学域是最难领域：平均成功率仅 20.2%（全域 GPT-5 SOTA 41.3%）
+}
+```
+
+---
+
+## 2. 综合跨领域 Benchmark
+
+| Benchmark | 年份 | 覆盖范围 | 规模 | 指标 | SOTA | 参考 |
+|-----------|------|---------|------|------|------|------|
+| **LAB-Bench** | 2024 | 实验室生物学研究基础能力：文献检索（LitQA2）、数据库查询（DbQA）、序列操作（SeqQA）、实验方案（ProtocolQA）、分子克隆工作流（CloningScenarios） | 2,457题（8类30子任务）；FutureHouse | Precision / Coverage | Claude 3.5 Sonnet最优；整体人类 ~69% > 模型 ~40–50%（SeqQA）；翻译效率子任务模型 **88% > 人类75%** | [arXiv 2407.10362](https://arxiv.org/abs/2407.10362) |
+| **FrontierScience** | 2025 | 跨物理/化学/生物三科的PhD级科学推理；Olympiad轨（奥赛式短答）+ Research轨（真实科研子问题）；生物学含分子生物/生化/遗传推导 | 700+题（gold set 160题）；42名国际奥赛金牌 + 45名博士科学家出题 | 逐步打分（GPT-4o评估）；Olympiad准确率；Research部分分 | GPT-5.2：Olympiad **77%** / Research **25%** | [OpenAI FrontierScience](https://openai.com/index/frontierscience/) |
+| **BABE**（Biology Arena BEnchmark） | 2026 | 基于同行评审论文的生物实验推理；12个生物子领域；Q1→Q2→Q3三元组（强相关：顺序因果推理 ~45%；弱相关：并行检索 ~55%） | 问题三元组形式；覆盖12个生物子领域 | 平均分（0–100）；Convergence Score | GPT-5.1-high: **52.31**（强相关51.79，弱相关52.86）；人类专家基线远高于模型 | [arXiv 2602.05857](https://arxiv.org/html/2602.05857v1) |
+| **ATLAS** | 2025 | 跨数学/物理/化学/生物/CS/地球/材料7大学科的博士级开放式推理；问题类型：计算推导71%/判断12%/解释10%/综合6% | ~800题（>50%含子问题）；25+机构博士专家出题；4阶段质控 | 平均准确率；mG-Pass@k（稳定性指标） | GPT-5-High: **42.9%**；大多数前沿模型 <35% | [arXiv 2511.14366](https://arxiv.org/html/2511.14366v2) |
+| **GPQA**（Graduate-Level Google-Proof Q&A）<br>⚠️ *通用benchmark；本项目选取生命科学相关子集* | 2023 | **通用**跨生物/化学/物理三科的研究生级4选1选择题；设计原则：答案无法通过搜索引擎直接获取，须领域专家级深度推理；本项目选取范围：**生物全子集**（198题）+ **化学中生物化学/有机化学相关部分**，合计约占总量50% | GPQA Extended: **546题**（生物198/化学227/物理121）；GPQA Diamond（≥2位领域专家独立验证一致的最高质量子集）: **198题**；生命科学相关约 **~290题**（Extended）/ **~110题**（Diamond） | 4选1准确率（%） | o3: **87.7%**（Diamond）；Gemini 2.5 Pro: ~86%；人类领域专家: ~65%；GPT-4: ~39% ⚠️ 人类专家仍具显著优势，尚未饱和 | [arXiv 2311.12022](https://arxiv.org/abs/2311.12022) |
+| **LLM Benchmarks in Life Sciences（综述）** | 2026 | 系统梳理：生物医学NLP（BioASQ/PubMedQA/MedMCQA）+药物设计（MoleculeNet/分子生成）+基因组与蛋白序列任务（DNA FM benchmarks/ProteinGym） | — | — | "目录索引"文章；帮助定位各子领域benchmark | [IntuitionLabs 2026](https://intuitionlabs.ai/articles/large-language-model-benchmarks-life-sciences-overview) |
+| **BEACON**（计划中） | 2026 | 统一生物与药物发现领域AI benchmarking；多实验室共享实验设计的"真实实验驱动"benchmark；跨模态跨任务统一leaderboard | — | — | 社区think tank + 开放评估平台；具体数据集建设中 | [BioPharma Trend 2026](https://www.biopharmatrend.com/news/beacon-launches-to-unite-ai-benchmarking-across-biology-and-drug-discovery-1507/) |
+
+**任务类型**：开放式科学推理（研究问题 → 多步分析推导 → 数值/文字答案）。
+
+```python
+# ── LAB-Bench 文献检索子任务（LitQA2）─────────────────────────────────
+input_litqa2 = {
     "task":          "查找 BRCA1 c.5266dupC 变异的致病性证据，给出 ACMG 分级建议。",
     "allowed_tools": ["PubMed_search", "ClinVar_lookup", "OMIM_query"],
 }
 
-output_agent = {
+output_litqa2 = {
     "tool_calls": [
         {
             "tool":   "ClinVar_lookup",
@@ -44,27 +139,9 @@ output_agent = {
     "task_success":  True,
     # 评测
     "LAB_Bench_human_accuracy": 0.69,   # 人类研究员
-    "BixBench_agent_accuracy":  0.17,   # GPT-4o / Claude 3.5 ⚠️（接近随机）
+    "LAB_Bench_model_accuracy": 0.45,   # Claude 3.5 Sonnet 最优
 }
-```
 
----
-
-## 2. 综合跨领域 Benchmark
-
-| Benchmark | 年份 | 覆盖范围 | 规模 | 指标 | SOTA | 参考 |
-|-----------|------|---------|------|------|------|------|
-| **LAB-Bench** | 2024 | 实验室生物学研究基础能力：文献检索（LitQA2）、数据库查询（DbQA）、序列操作（SeqQA）、实验方案（ProtocolQA）、分子克隆工作流（CloningScenarios） | 2,457题（8类30子任务）；FutureHouse | Precision / Coverage | Claude 3.5 Sonnet最优；整体人类 ~69% > 模型 ~40–50%（SeqQA）；翻译效率子任务模型 **88% > 人类75%** | [arXiv 2407.10362](https://arxiv.org/abs/2407.10362) |
-| **FrontierScience** | 2025 | 跨物理/化学/生物三科的PhD级科学推理；Olympiad轨（奥赛式短答）+ Research轨（真实科研子问题）；生物学含分子生物/生化/遗传推导 | 700+题（gold set 160题）；42名国际奥赛金牌 + 45名博士科学家出题 | 逐步打分（GPT-4o评估）；Olympiad准确率；Research部分分 | GPT-5.2：Olympiad **77%** / Research **25%** | [OpenAI FrontierScience](https://openai.com/index/frontierscience/) |
-| **BABE**（Biology Arena BEnchmark） | 2026 | 基于同行评审论文的生物实验推理；12个生物子领域；Q1→Q2→Q3三元组（强相关：顺序因果推理 ~45%；弱相关：并行检索 ~55%） | 问题三元组形式；覆盖12个生物子领域 | 平均分（0–100）；Convergence Score | GPT-5.1-high: **52.31**（强相关51.79，弱相关52.86）；人类专家基线远高于模型 | [arXiv 2602.05857](https://arxiv.org/html/2602.05857v1) |
-| **ATLAS** | 2025 | 跨数学/物理/化学/生物/CS/地球/材料7大学科的博士级开放式推理；问题类型：计算推导71%/判断12%/解释10%/综合6% | ~800题（>50%含子问题）；25+机构博士专家出题；4阶段质控 | 平均准确率；mG-Pass@k（稳定性指标） | GPT-5-High: **42.9%**；大多数前沿模型 <35% | [arXiv 2511.14366](https://arxiv.org/html/2511.14366v2) |
-| **GPQA**（Graduate-Level Google-Proof Q&A）<br>⚠️ *通用benchmark；本项目选取生命科学相关子集* | 2023 | **通用**跨生物/化学/物理三科的研究生级4选1选择题；设计原则：答案无法通过搜索引擎直接获取，须领域专家级深度推理；本项目选取范围：**生物全子集**（198题）+ **化学中生物化学/有机化学相关部分**，合计约占总量50% | GPQA Extended: **546题**（生物198/化学227/物理121）；GPQA Diamond（≥2位领域专家独立验证一致的最高质量子集）: **198题**；生命科学相关约 **~290题**（Extended）/ **~110题**（Diamond） | 4选1准确率（%） | o3: **87.7%**（Diamond）；Gemini 2.5 Pro: ~86%；人类领域专家: ~65%；GPT-4: ~39% ⚠️ 人类专家仍具显著优势，尚未饱和 | [arXiv 2311.12022](https://arxiv.org/abs/2311.12022) |
-| **LLM Benchmarks in Life Sciences（综述）** | 2026 | 系统梳理：生物医学NLP（BioASQ/PubMedQA/MedMCQA）+药物设计（MoleculeNet/分子生成）+基因组与蛋白序列任务（DNA FM benchmarks/ProteinGym） | — | — | "目录索引"文章；帮助定位各子领域benchmark | [IntuitionLabs 2026](https://intuitionlabs.ai/articles/large-language-model-benchmarks-life-sciences-overview) |
-| **BEACON**（计划中） | 2026 | 统一生物与药物发现领域AI benchmarking；多实验室共享实验设计的"真实实验驱动"benchmark；跨模态跨任务统一leaderboard | — | — | 社区think tank + 开放评估平台；具体数据集建设中 | [BioPharma Trend 2026](https://www.biopharmatrend.com/news/beacon-launches-to-unite-ai-benchmarking-across-biology-and-drug-discovery-1507/) |
-
-**任务类型**：开放式科学推理（研究问题 → 多步分析推导 → 数值/文字答案）。
-
-```python
 # ── GPQA Diamond 生物子集（研究生级 4选1）──────────────────────────────
 input_gpqa = {
     "question": ("CRISPR-Cas9 导入 TP53 R248W 热点突变后，该 GOF 突变蛋白在无血清培养中"
