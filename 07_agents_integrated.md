@@ -15,6 +15,41 @@
 | **BioProBench** | 2025 | 生物实验Protocol理解与生成：方案问答（PQA）、步骤排序（ORD）、错误纠正（ERR）、Protocol生成（GEN）、链式推理（REA）；16个生物子领域 | 556,171题（26,933个人工协议） | PQA/ORD: Accuracy；ERR: F1；GEN: BLEU/Step Recall | PQA: Gemini-2.5-pro **70.27%**（ProAgent 85%）；ERR: DeepSeek-R1 F1 **64.03%**；GEN: BLEU<11%，所有基础模型 | [arXiv 2505.07889](https://arxiv.org/abs/2505.07889) |
 | **SciAgentGYM** | 2026 | LLM Agent多步骤科学工具调用：物理/化学/材料/生命科学4域，按步骤数分L1(≤3)/L2(4–7)/L3(≥8)三级难度 | 259任务/1,134子问题；1,780种领域专属工具 | 任务成功率（%） | GPT-5: **41.3%**（L1:60.6%, L3:30.9%）；Claude-Sonnet-4: 35.9% | [arXiv 2602.12984](https://arxiv.org/abs/2602.12984) |
 
+**任务类型**：多步工具调用 + 推理（自然语言任务描述 → 工具序列执行 → 结构化结论）。
+
+```python
+# 以 LAB-Bench 文献检索子任务（LitQA2）为例
+input_task = {
+    "task":          "查找 BRCA1 c.5266dupC 变异的致病性证据，给出 ACMG 分级建议。",
+    "allowed_tools": ["PubMed_search", "ClinVar_lookup", "OMIM_query"],
+}
+
+output_agent = {
+    "tool_calls": [
+        {
+            "tool":   "ClinVar_lookup",
+            "query":  "BRCA1 c.5266dupC",
+            "result": "Pathogenic (5★); 342 submissions",
+        },
+        {
+            "tool":   "PubMed_search",
+            "query":  "BRCA1 5266dupC breast cancer",
+            "result": "23 papers; Ashkenazi Jewish founder mutation",
+        },
+        {
+            "tool":   "OMIM_query",
+            "query":  "BRCA1 113705",
+            "result": "Hereditary breast and ovarian cancer syndrome",
+        },
+    ],
+    "conclusion":   "该变异为已知致病截短突变（PVS1 + PS1），ACMG 分级：致病性（Pathogenic）。",
+    "task_success":  True,
+    # 评测
+    "LAB_Bench_human_accuracy": 0.69,   # 人类研究员
+    "BixBench_agent_accuracy":  0.17,   # GPT-4o / Claude 3.5 ⚠️（接近随机）
+}
+```
+
 ---
 
 ## 2. 综合跨领域 Benchmark 套件
@@ -27,6 +62,41 @@
 | **GPQA**（Graduate-Level Google-Proof Q&A）<br>⚠️ *通用benchmark；本项目选取生命科学相关子集* | 2023 | **通用**跨生物/化学/物理三科的研究生级4选1选择题；设计原则：答案无法通过搜索引擎直接获取，须领域专家级深度推理；本项目选取范围：**生物全子集**（198题）+ **化学中生物化学/有机化学相关部分**，合计约占总量50% | GPQA Extended: **546题**（生物198/化学227/物理121）；GPQA Diamond（≥2位领域专家独立验证一致的最高质量子集）: **198题**；生命科学相关约 **~290题**（Extended）/ **~110题**（Diamond） | 4选1准确率（%） | o3: **87.7%**（Diamond）；Gemini 2.5 Pro: ~86%；人类领域专家: ~65%；GPT-4: ~39% ⚠️ 人类专家仍具显著优势，尚未饱和 | [arXiv 2311.12022](https://arxiv.org/abs/2311.12022) |
 | **LLM Benchmarks in Life Sciences（综述）** | 2026 | 系统梳理：生物医学NLP（BioASQ/PubMedQA/MedMCQA）+药物设计（MoleculeNet/分子生成）+基因组与蛋白序列任务（DNA FM benchmarks/ProteinGym） | — | — | "目录索引"文章；帮助定位各子领域benchmark | [IntuitionLabs 2026](https://intuitionlabs.ai/articles/large-language-model-benchmarks-life-sciences-overview) |
 | **BEACON**（计划中） | 2026 | 统一生物与药物发现领域AI benchmarking；多实验室共享实验设计的"真实实验驱动"benchmark；跨模态跨任务统一leaderboard | — | — | 社区think tank + 开放评估平台；具体数据集建设中 | [BioPharma Trend 2026](https://www.biopharmatrend.com/news/beacon-launches-to-unite-ai-benchmarking-across-biology-and-drug-discovery-1507/) |
+
+**任务类型**：开放式科学推理（研究问题 → 多步分析推导 → 数值/文字答案）。
+
+```python
+# ── GPQA Diamond 生物子集（研究生级 4选1）──────────────────────────────
+input_gpqa = {
+    "question": ("CRISPR-Cas9 导入 TP53 R248W 热点突变后，该 GOF 突变蛋白在无血清培养中"
+                 "最可能通过何种机制促进肿瘤细胞存活？"),
+    "options": {
+        "A": "抑制 BAX 转录激活下游凋亡",
+        "B": "激活 MYC 靶基因，绕过生长因子依赖",
+        "C": "与 p63/p73 竞争 DNA 结合，阻断其促凋亡功能",
+        "D": "激活 MDM2 E3 连接酶降解野生型 p53",
+    },
+}
+output_gpqa = {
+    "answer":     "C",
+    "reasoning":  "R248W 通过显性负效应与 p63/p73 竞争结合，是经典 GOF 机制之一...",
+    "confidence":  0.78,
+    # 评测（GPQA Diamond 整体）
+    "model_accuracy":  0.877,   # o3 SOTA
+    "human_expert":    0.650,   # 领域专家
+}
+
+# ── FrontierScience Research 轨（真实科研子问题）──────────────────────
+input_frontier = {
+    "paper_context": "2024 Nature 文章研究 CAR-T 细胞耗竭机制...",
+    "sub_question":  "图 3B 中，TOX 敲除后 CAR-T 细胞持久性提升的分子机制是什么？",
+}
+output_frontier = {
+    "answer":     ("TOX 是 T 细胞耗竭核心转录因子，其敲除解除了 NR4A/BATF 介导的耗竭程序，"
+                   "恢复效应相关基因表达..."),
+    "step_score":  2.1,   # /5（GPT-5.2 Research 轨道 SOTA）
+}
+```
 
 ---
 
