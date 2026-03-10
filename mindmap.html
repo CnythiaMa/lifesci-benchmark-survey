@@ -380,12 +380,15 @@ markmap:
   });
 
   document.getElementById('btn-expand').addEventListener('click', () => {
+    // 禁用 initialExpandLevel 的自动折叠，否则 setData 内的 initializeData 会把深层节点重新折起
+    window.mm.setOptions({ initialExpandLevel: -1 });
     expandAll(window.mm.state.data);
     window.mm.setData(window.mm.state.data);
     setTimeout(() => window.mm.fit(), 150);
   });
 
   document.getElementById('btn-collapse').addEventListener('click', () => {
+    window.mm.setOptions({ initialExpandLevel: -1 });
     collapseToDepth(window.mm.state.data, 0, 1);
     window.mm.setData(window.mm.state.data);
     setTimeout(() => window.mm.fit(), 150);
