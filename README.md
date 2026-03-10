@@ -26,7 +26,7 @@ leaderboard/
 
 ## 快速总览
 
-**[→ 打开可交互总览表（支持 🔬 领域专用 / 🧠 LLM·Agent 筛选）](https://cnythiama.github.io/lifesci-benchmark-survey/overview.html)**
+**[→ 打开可交互总览表（支持 🔬 垂域专用 / 🧠 LLM·Agent 筛选）](https://cnythiama.github.io/lifesci-benchmark-survey/overview.html)**
 
 > 收录全部 ~108 个 Benchmark，按领域分组（01–07）；同名 benchmark 仅保留首次出现的领域。
 
