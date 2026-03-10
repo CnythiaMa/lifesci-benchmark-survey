@@ -1,0 +1,275 @@
+# 生命科学 AI Benchmark 全景图
+
+## 🧬 蛋白质生物学
+
+### 蛋白质结构预测
+- CASP14
+  - SOTA: AlphaFold2 — GDT_TS 92.4 / sum-z 244
+- CASP15
+  - SOTA: AF2变体 TM-score ~0.92；AF-Multimer DockQ ~0.60
+- CAMEO（持续自动评测）
+  - SOTA: AF2-based 平均 lDDT > 0.85
+- CATH / SCOPe（结构分类）
+  - SOTA: Foldseek / TM-align
+- 1.4M 结构基准集（2025）
+  - SOTA: 140万经质量检查结构，可更新测试集
+
+### 蛋白质功能与适应性
+- ProteinGym（2.7M 突变 / 217 assays）
+  - SOTA: Tranception L — 中位 Spearman r 0.46
+- FLIP（4 任务适应性预测）
+  - SOTA: ESM2微调 — GB1 ~0.75 / AAV ~0.85
+- FLIP2（2026，扩展版）
+  - SOTA: 竞赛进行中，暂无公开SOTA
+- PEER（多任务统一评测）
+  - SOTA: ESM2 / ProtTrans — AUC ~0.85
+- CAFA6（2026，Kaggle竞赛）
+  - SOTA: GO功能注释，竞赛进行中
+
+### 蛋白质–蛋白质互作 (PPI)
+- PRING（多物种无泄露切分，2025）
+  - SOTA: 最优图模型 AUROC ~0.85（严格切分）
+- SHS27k / SHS148k
+  - SOTA: KSGPPI Accuracy 88.96%（含数据泄露警告）
+- Human PPI 26法社区评测（2023）
+  - SOTA: 严格物种切分 AUROC ~0.72 vs 随机切分 ~0.92
+
+### 蛋白质语言模型 PLM 评测
+- 多任务PLM评测（2024）
+  - SOTA: ESM2-3B — 定位 AUC 0.90 / 稳定性 Spearman 0.67
+- DARKIN（2024，黑暗激酶）
+  - SOTA: 零样本 AUC ~0.75；微调可达 ~0.88
+
+---
+
+## 💊 药物发现
+
+### ADMET 预测
+- TDC（22 任务标准化）
+  - SOTA: ADMET-AI — AUROC ~0.871
+- PharmaBench（2024）
+  - SOTA: LLM增强SMILES — AUROC ~0.86
+- Tox21 Challenge
+  - SOTA: DeepTox — AUC ~0.85–0.88
+
+### 药物–靶标互作 (DTI)
+- Davis（Kd 亲和力）
+  - SOTA: 注意力DTA — CI 0.893
+- KIBA（复合评分）
+  - SOTA: 最优模型 CI ~0.901
+- BindingDB（>991K IC50对）
+  - SOTA: 二分类AUROC ~0.99（结构感知）
+
+### 分子性质预测
+- MoleculeNet（17+ 数据集）
+  - SOTA: Uni-Mol/GROVER — HIV 0.82 / BBBP 0.91
+- TDC（66 数据集）
+  - SOTA: ChemBERTa / GROVER
+
+### 分子生成
+- MOSES（2D生成）
+  - SOTA: Validity ~99.9%；REINVENT均分 0.79
+- GuacaMol（20 优化基准）
+  - SOTA: REINVENT 均分 0.79
+- MolScore（多目标统一框架）
+  - SOTA: 综合分 ~0.72
+- TOMG-Bench（文本引导生成）
+  - SOTA: 微调Llama3.1 — 46.5%优势
+- 3D 分子生成（DiffSBDD / TargetDiff）
+  - SOTA: Validity 99% / RMSD ~0.35 Å
+
+---
+
+## 🔬 基因组学 & 单细胞
+
+### 变异效应预测
+- ClinVar + gnomAD
+  - SOTA: AlphaGenome — AUC 0.78–0.91（剪接预测）
+- AlphaGenome 26-benchmark Suite
+  - SOTA: AlphaGenome（DeepMind, 2025）
+- CAGI（社区挑战赛）
+  - SOTA: Ensemble 模型
+
+### 基因表达预测
+- Enformer（调控序列 → 表达）
+  - SOTA: EPInformer — Pearson r 0.875–0.891
+- scRNA 扰动预测（Norman / Replogle）
+  - ⚠️ SOTA: PCA baseline 优于所有基础模型（Nature Methods 2025）
+
+### 调控元件预测
+- Nucleotide Transformer v2（18 任务）
+  - SOTA: 剪接位点 F1 ~0.92
+- SegmentNT（基因组分割）
+  - SOTA: SegmentNT — Jaccard ~0.87
+- GFMBench-API（28 数据集）
+  - SOTA: 多模型集成
+
+### 单细胞 RNA-seq
+- scBench（394 问题 / 9 任务，2026）
+  - SOTA: GPT-4o + 专用 Agent — 65% 任务成功率
+- scSuperAnnotator
+  - SOTA: scGPT fine-tuned
+
+### 空间转录组
+- HESCAPE（组织切片检索）
+  - SOTA: R@1 ~55%（跨模态对齐模型）
+- 图像→基因表达（11法比较）
+  - SOTA: Pearson r ~0.45（最优方法）
+
+---
+
+## 🏥 临床与医学
+
+### 医学问答 (QA)
+- MedQA（USMLE 4选1）
+  - SOTA: Med-Gemini — 91.1%；GPT-4o ~90%
+- MedMCQA（印度医学考试）
+  - SOTA: GPT-4级 ~70–75%
+- PubMedQA（文献推理）
+  - SOTA: OpenMedLM / Yi-34B — 77.3%
+- BioASQ（持续至2025）
+  - SOTA: 是非题 >80%；2025新增MultiClinSum
+- MMLU 医学子集（~1400题）
+  - SOTA: GPT-4.1 ~90%；Claude 3 Opus 86.8%
+- MedXpertQA（专家级，2025 ICML）
+  - SOTA: 顶尖LLM 45–52%（⚠️ 人类87%）
+
+### 临床 NLP / EHR 操作
+- n2c2 系列（去标识/关系/概念）
+  - SOTA: 微调 BERT — 去标识 F1 ~99%
+- MedAgentBench（EHR Agent，NEJM AI 2025）
+  - SOTA: 最佳Agent — 70% 任务完成率
+- MedArena（临床医生偏好，2025）
+  - SOTA: Gemini 2.0 Flash Thinking #1
+- MedS-Bench（122类任务，2025）
+  - SOTA: GPT-4综合最优；平均 ~68%
+- CSEDB（30指标/26科室，2025）
+  - SOTA: 平均 57.2%；高风险场景 -13.3%
+- DRAGON（临床NLP自动标注，2025）
+  - SOTA: 最优pipeline F1 ~85%（文档分类）
+- GLiNER-biomed（开放域NER，2025）
+  - SOTA: 零样本 F1 ~85%，可泛化新实体类型
+
+### 疾病诊断 / ICD 编码
+- MAX-EVAL-11（ICD-11 编码）
+  - SOTA: Claude 4 Sonnet — 43.3%；Gemini 2.5 Flash 34.1%
+- MedBench v4（中文医学综合，2025）
+  - SOTA: 最优中文医学模型 Accuracy ~75%
+
+### 综合医学 LLM 评测
+- MedHELM（斯坦福，持续更新）
+  - SOTA: GPT-4o / Claude-3.5-Sonnet 领先
+- HealthBench（OpenAI, 2025）
+  - SOTA: GPT-4o ~72 / Claude-3.5 ~70
+- Open Medical-LLM Leaderboard（HuggingFace）
+  - SOTA: 当前榜首平均 ~80%
+- Biomni-Eval1（罕见病/CRISPR，2025）
+  - SOTA: Biomni Agent（Stanford）综合最优
+
+---
+
+## 🖼️ 多模态
+
+### 医学图像 + 文本 (VQA)
+- PathMMU（病理切片问答）
+  - SOTA: 专科病理VLM — 68%（⚠️ 人类 ~90%）
+- OmniMedVQA（12模态，CVPR 2024）
+  - SOTA: 专科多模态模型 — 79%
+- MIMIC-CXR / EHRXQA（胸片+EHR）
+  - SOTA: 多模态融合 — ~80%
+- GEMeX（可定位CXR VQA，ICCV 2025）
+  - SOTA: 准确率 ~72% / 定位 IoU ~0.45
+
+### 生物协议理解
+- BioProBench（实验操作步骤，2025）
+  - SOTA: 专门微调 ~70%；多步推理仍具挑战
+
+### 多模态基础模型
+- 15M Image-Text Biomedical FM（2024）
+  - SOTA: 零样本 ~78% / 跨模态检索 R@1 ~65%
+- MULAN（序列 + 结构多模态，2025）
+  - SOTA: 联合模态 AUC 0.91
+- MedGemma 1.5（Google, 2025）
+  - SOTA: 胸片分类 AUC 0.94
+
+---
+
+## 📝 生物医学 NLP
+
+### 命名实体识别 (NER)
+- BC5CDR（化学品/疾病）
+  - SOTA: PubMedBERT fine-tuned — F1 ~90%
+- NCBI Disease
+  - SOTA: BERT微调 — F1 ~90%
+- BC2GM（基因/蛋白质）
+  - SOTA: BioNER BERT — F1 ~84–88%
+- JNLPBA（5类生物实体）
+  - SOTA: 微调模型 — F1 ~78–82%
+- BioRED（多实体/文档级，2022）
+  - SOTA: 文档级RE F1 ~72%（比摘要级更难）
+
+### 关系抽取 (RE)
+- ChemProt（化学–蛋白质关系）
+  - SOTA: 微调PubMedBERT — F1 ~82%
+- DDI（药物–药物相互作用）
+  - SOTA: 微调模型 — F1 ~80–85%
+- GAD（基因–疾病关联）
+  - SOTA: BERT微调 — F1 ~87%
+
+### 统一 NLP 套件
+- BLURB（13 数据集，2020）
+  - SOTA: PubMedBERT — 综合分 82.91
+- BigBIO（100+ 数据集，NeurIPS 2022）
+  - SOTA: 76个NER数据集，12任务
+- BioNLP Benchmark Suite（Nat. Commun. 2025）
+  - SOTA: 微调NER/RE F1 ~88%；LLM开放QA ~77%
+- BIOSSES（语义相似度）
+  - SOTA: BioALBERT — Pearson r ~0.90
+- MedNLI（临床NLI）
+  - SOTA: ClinicalBERT — Accuracy ~82%
+
+### 生物信息学推理 / 编程
+- Bioinfo-Bench（知识推理）
+  - SOTA: GPT-4 — >80%（多选）
+- BioCoder（生物信息编程）
+  - SOTA: GPT-4 — Pass@1 ~42%
+- BioinformaticsBench（9子领域，2024）
+  - SOTA: GPT-4 ~68%；工具调用是关键瓶颈
+- Eubiota（微生物组推理，2026）
+  - SOTA: Eubiota系统 87.7%；超GPT-5.1约10.4%
+
+---
+
+## 🤖 AI 智能体 & 跨领域综合
+
+### 生命科学 AI Agent 评测
+- scBench（单细胞分析 Agent，2026）
+  - SOTA: GPT-4o Agent — 65% 任务成功率
+- MedAgentBench（临床 EHR Agent）
+  - SOTA: GPT-4o — 70% 任务完成率
+- BioAgent Bench（生物实验工作流）
+  - SOTA: Claude-3.5 / GPT-4o
+- LAB-Bench（2457题 / 8类 / 30子任务）
+  - SOTA: Claude 3.5 Sonnet 综合最优
+- BixBench（真实生信分析，~205题）
+  - SOTA: GPT-4o / Claude 3.5 ~17%（⚠️ 接近随机）
+
+### 跨领域综合套件
+- LLM Benchmarks in Life Sciences 2026（综述）
+  - 涵盖：蛋白质 / 基因组 / 药物 / 临床 四大领域
+- FrontierScience（PhD级推理）
+  - 物理/化学/生物跨领域；42位奥赛金牌出题
+- ATLAS（博士级，~800题/7学科）
+  - 目标：跨领域综合推理
+- BEACON（规划中）
+  - 目标：跨领域统一排行榜
+
+### 当前主要空白
+- 序列标记联合理解（`<mol>` / `<protein>` / `<rna>`）
+  - 无成熟 benchmark
+- 跨领域因果推理链
+  - 变异 → 表型 → 疾病链路评测缺失
+- 完整药物发现流水线评测
+  - 靶点 → 分子设计 → ADMET → 临床端到端缺失
+- 中文生物医学 Agent 评测
+  - 目前以英文为主
