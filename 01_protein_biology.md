@@ -41,7 +41,7 @@ output = {
 | Benchmark | 年份 | 任务 | 规模 | 指标 | SOTA（最佳已知分数） | 参考 |
 |-----------|------|------|------|------|---------------------|------|
 | **ProteinGym** | 2023 (NeurIPS) | 蛋白质适应性预测（零样本+监督） | 2.7M missense变体 × 217 DMS实验；~300K indels × 74实验；2,525临床蛋白 | 中位数 Spearman ρ | 零样本：Tranception L **0.46**；ESM-1v 0.44；监督微调：~0.57 | [proteingym.org](https://proteingym.org/benchmarks) |
-| **FLIP** | 2021 | 蛋白质适应性/性质预测（标准化切分） | AAV/GFP/GB1/热稳定性等多个实验 | 每任务 Spearman ρ | GB1 low-vs-high: ESM2微调 **~0.75**；AAV: ~0.85（任务差异大） | [GitHub FLIP](https://github.com/J-SNACKKB/FLIP) |
+| **FLIP** | 2021 | 蛋白质性质预测（标准化切分） | AAV/GFP/GB1/热稳定性等多个实验 | 每任务 Spearman ρ | GB1 low-vs-high: ESM2微调 **~0.75**；AAV: ~0.85（任务差异大） | [GitHub FLIP](https://github.com/J-SNACKKB/FLIP) |
 | **PEER** | 2022 | 多任务蛋白质理解（功能/结构/互作/定位） | 15个数据集×5类 | AUC, Spearman ρ | ESM2/ProtTrans微调；各子任务平均 AUC **~0.85** | [arXiv 2206.02096](https://arxiv.org/abs/2206.02096) |
 | **ProteinGLUE** | 2022 | 自监督蛋白建模，7个下游任务 | 多任务 | 各任务独立指标 | ESM-1b 在7任务中5个最优；二级结构 Q3 **~84%** | [Sci. Reports 2022](https://www.nature.com/articles/s41598-022-19608-4) |
 | **FLIP2** | 2026 | 蛋白质fitness landscape基准（扩展版） | 比FLIP更多蛋白+更多样选择压力 | 中位数 Spearman ρ | 竞赛进行中，暂无公开SOTA | [bioRxiv 2026.02.23](https://www.biorxiv.org/content/10.64898/2026.02.23.707496v1) |
