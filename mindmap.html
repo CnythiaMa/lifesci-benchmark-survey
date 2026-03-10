@@ -11,51 +11,48 @@
       position: fixed; top: 0; left: 0; right: 0; z-index: 100;
       display: flex; align-items: center; gap: 10px;
       padding: 8px 16px;
-      background: rgba(255, 255, 255, 0.95);
+      background: rgba(255,255,255,0.95);
       backdrop-filter: blur(8px);
       border-bottom: 1px solid #d0d7de;
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
     }
-    #toolbar h1 {
-      font-size: 14px; font-weight: 600; color: #1a1a1a;
-      white-space: nowrap;
-    }
+    #toolbar h1 { font-size: 14px; font-weight: 600; color: #1a1a1a; white-space: nowrap; }
     #toolbar .sep { flex: 1; }
     #toolbar button {
       padding: 4px 10px; border-radius: 6px; border: 1px solid #d0d7de;
       background: #f6f8fa; color: #1a1a1a; font-size: 12px; cursor: pointer;
     }
     #toolbar button:hover { background: #e9ecef; }
-    #mindmap-container {
-      width: 100%; height: 100vh;
-      padding-top: 42px;
+    #toolbar a {
+      padding: 4px 10px; border-radius: 6px; border: 1px solid #d0d7de;
+      background: #f6f8fa; color: #1a1a1a; font-size: 12px; text-decoration: none;
     }
-    .markmap { width: 100%; height: 100%; background: #ffffff; }
-    /* 强制脑图文字为黑色 */
-    .markmap svg text { fill: #1a1a1a !important; }
-    .markmap svg a { fill: #0969da !important; }
+    #mm-svg { width: 100%; height: calc(100vh - 42px); margin-top: 42px; background: #ffffff; }
+    /* 覆盖 markmap 默认深色文字 */
+    #mm-svg text { fill: #1a1a1a !important; }
+    #mm-svg a { fill: #0969da !important; }
   </style>
 </head>
 <body>
-  <div id="toolbar">
-    <h1>🧬 生命科学 AI Benchmark 全景图</h1>
-    <span class="sep"></span>
-    <button id="btn-fit">适应屏幕</button>
-    <button id="btn-expand">全展开</button>
-    <button id="btn-collapse">收起到一级</button>
-    <a href="README.md" style="padding:4px 10px; border-radius:6px; border:1px solid #d0d7de; background:#f6f8fa; color:#1a1a1a; font-size:12px; text-decoration:none;">← README</a>
-  </div>
 
-  <div id="mindmap-container">
-    <div class="markmap">
-      <script type="text/template">
+<div id="toolbar">
+  <h1>🧬 生命科学 AI Benchmark 全景图</h1>
+  <span class="sep"></span>
+  <button id="btn-fit">适应屏幕</button>
+  <button id="btn-expand">全展开</button>
+  <button id="btn-collapse">收起到一级</button>
+  <a href="README.md">← README</a>
+</div>
+
+<svg id="mm-svg"></svg>
+
+<!-- markdown 内容：type=text/plain 不会被浏览器执行，反引号等特殊字符安全 -->
+<script id="md-content" type="text/plain">
 ---
 markmap:
   initialExpandLevel: 2
   colorFreezeLevel: 2
   maxWidth: 400
-  zoom: true
-  pan: true
 ---
 
 # 生命科学 AI Benchmark 全景图
@@ -320,65 +317,81 @@ markmap:
   - 目标：跨领域统一排行榜
 
 ### ⚠️ 当前主要空白 Gap Analysis
-- **序列标记联合理解** (`<mol>` / `<protein>` / `<rna>`)
-  - 无成熟benchmark
+- **序列标记联合理解**
+  - 无成熟benchmark（mol / protein / rna 标记）
 - **跨领域因果推理**（变异→表型→疾病）
   - 评测链路缺失
 - **完整药物发现流水线**（端到端）
   - 靶点→分子→ADMET→临床
 - **中文生物医学Agent评测**
   - 目前以英文为主
-      </script>
-    </div>
-  </div>
+</script>
 
-  <script src="https://cdn.jsdelivr.net/npm/markmap-autoloader@latest"></script>
-  <script>
-    // 递归设置所有节点 fold 状态
-    function setFoldAll(node, foldValue) {
-      if (!node) return;
-      if (!node.payload) node.payload = {};
-      node.payload.fold = foldValue;
-      (node.children || []).forEach(c => setFoldAll(c, foldValue));
-    }
+<!-- markmap-autoloader 会把 Transformer、Markmap 等挂到 window.markmap -->
+<script src="https://cdn.jsdelivr.net/npm/markmap-autoloader@latest"></script>
 
-    // 仅展开到指定深度，超出则折叠
-    function setFoldToDepth(node, currentDepth, maxDepth) {
-      if (!node) return;
-      if (!node.payload) node.payload = {};
-      const hasChildren = node.children && node.children.length > 0;
-      node.payload.fold = (hasChildren && currentDepth >= maxDepth) ? 1 : 0;
-      (node.children || []).forEach(c => setFoldToDepth(c, currentDepth + 1, maxDepth));
-    }
+<script>
+(async function init() {
+  // 等待 window.markmap.Markmap 就绪（autoloader 可能异步加载子模块）
+  while (!window.markmap || !window.markmap.Markmap || !window.markmap.Transformer) {
+    await new Promise(r => setTimeout(r, 50));
+  }
 
-    // 轮询等待 markmap 实例就绪（autoloader 异步渲染，timing 不固定）
-    let mm = null;
-    const poll = setInterval(() => {
-      const svg = document.querySelector('.markmap svg');
-      if (svg && svg.__markmap) {
-        mm = svg.__markmap;
-        clearInterval(poll);
-      }
-    }, 100);
+  const { Transformer, Markmap, loadCSS, loadJS } = window.markmap;
 
-    document.getElementById('btn-fit').addEventListener('click', () => {
-      if (mm) mm.fit();
-    });
+  const md = document.getElementById('md-content').textContent.trim();
+  const transformer = new Transformer();
+  const { root, features } = transformer.transform(md);
 
-    document.getElementById('btn-expand').addEventListener('click', () => {
-      if (!mm) return;
-      setFoldAll(mm.state.data, 0);
-      mm.setData(mm.state.data);
-      setTimeout(() => mm.fit(), 100);
-    });
+  // 加载 markdown 中用到的额外资源（如数学公式字体等）
+  const assets = transformer.getUsedAssets(features);
+  const promises = [];
+  if (assets.styles && loadCSS) promises.push(loadCSS(assets.styles));
+  if (assets.scripts && loadJS) promises.push(loadJS(assets.scripts));
+  await Promise.all(promises);
 
-    document.getElementById('btn-collapse').addEventListener('click', () => {
-      if (!mm) return;
-      // 保留根节点和一级展开，其余折叠
-      setFoldToDepth(mm.state.data, 0, 1);
-      mm.setData(mm.state.data);
-      setTimeout(() => mm.fit(), 100);
-    });
-  </script>
+  // 直接创建实例，拿到引用
+  const svgEl = document.getElementById('mm-svg');
+  window.mm = Markmap.create(svgEl, {
+    initialExpandLevel: 2,
+    colorFreezeLevel: 2,
+    maxWidth: 400,
+  }, root);
+
+  // ---- 节点折叠辅助函数 ----
+  function expandAll(node) {
+    if (!node) return;
+    if (!node.payload) node.payload = {};
+    node.payload.fold = 0;
+    (node.children || []).forEach(expandAll);
+  }
+
+  function collapseToDepth(node, cur, max) {
+    if (!node) return;
+    if (!node.payload) node.payload = {};
+    const hasKids = node.children && node.children.length > 0;
+    node.payload.fold = (hasKids && cur >= max) ? 1 : 0;
+    (node.children || []).forEach(c => collapseToDepth(c, cur + 1, max));
+  }
+
+  // ---- 按钮绑定 ----
+  document.getElementById('btn-fit').addEventListener('click', () => {
+    window.mm.fit();
+  });
+
+  document.getElementById('btn-expand').addEventListener('click', () => {
+    expandAll(window.mm.state.data);
+    window.mm.setData(window.mm.state.data);
+    setTimeout(() => window.mm.fit(), 150);
+  });
+
+  document.getElementById('btn-collapse').addEventListener('click', () => {
+    collapseToDepth(window.mm.state.data, 0, 1);
+    window.mm.setData(window.mm.state.data);
+    setTimeout(() => window.mm.fit(), 150);
+  });
+})();
+</script>
+
 </body>
 </html>
