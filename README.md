@@ -65,7 +65,7 @@ leaderboard/
 | **MOSES** | 2020 | 分子生成分布学习评测 | ~1.9M类药ZINC | Validity, FCD | LSTM Validity **99.9%**；FCD **~0.07** | [Frontiers Pharmacol.](https://www.frontiersin.org/journals/pharmacology/articles/10.3389/fphar.2020.565644/full) |
 | **GuacaMol** | 2019 | 目标导向+分布学习分子生成 | ChEMBL来源 | 基准分(0–1), FCD | REINVENT目标导向 **~0.79** | [JCIM](https://pubs.acs.org/doi/10.1021/acs.jcim.8b00839) |
 | **MolScore** | 2024 | 统一多目标分子生成评测框架 | 包装GuacaMol/MOSES | 多目标综合分 | 最优多目标综合 **~0.72** | [J. Cheminformatics](https://jcheminf.biomedcentral.com/articles/10.1186/s13321-024-00861-w) |
-| **TOMG-Bench** | 2024 | 文本引导分子生成（LLM评测） | 25个LLM评测 | 有效性+质量评分 | Llama3.1-8B微调 **46.5%** | [IntuitionLabs](https://intuitionlabs.ai/articles/large-language-model-benchmarks-life-sciences-overview) |
+| **TOMG-Bench** | 2024 | 文本引导分子生成（LLM评测） | 25个LLM评测 | 有效性+质量评分 | Llama3.1-8B微调 **46.5%** | [arXiv 2412.14642](https://arxiv.org/abs/2412.14642) |
 | **3D扩散模型分子生成评测** | 2025 | 无条件/条件3D分子生成方法比较 | ZINC + PDBbind | Validity, RMSD | 最优Validity **~99%**；RMSD **~0.35Å** | [ACS Omega](https://pubs.acs.org/doi/10.1021/acsomega.5c05077) |
 | **3D结构引导分子生成基准** | 2025 | 蛋白口袋条件分子生成 | PDBbind子集 | Docking score, QED | 最优Docking **~-8.5 kcal/mol** | [JCIM](https://pubs.acs.org/doi/10.1021/acs.jcim.5c01020) |
 | **ChemBERTa-3** | 2026 | 化学基础模型统一训练框架评测 | MoleculeNet全套 | AUROC, RMSE | MoleculeNet平均 AUROC **~0.88** | [RSC Digital Disc.](https://pubs.rsc.org/en/content/articlehtml/2026/dd/d5dd00348b) |
