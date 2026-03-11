@@ -12,6 +12,7 @@
 | **BioAgent Bench** | 2025 | AI agents在生物信息学中的能力与生物安全风险评估（序列分析/文献检索/实验设计） | 多种agent任务 + 风险相关任务 | 能力分，安全约束通过率 | 包含生物安全维度的罕见评测 | [EmergentMind](https://www.emergentmind.com/topics/bioagent-bench) |
 | **BixBench** | 2025 | AI Agent在真实生信分析任务上的多步骤计算推理：探索生物数据集、执行Python/R/Bash分析流程、解读研究结论 | ~205题（60个真实Jupyter notebook capsule） | LLM自动评分（开放题）；准确率（MCQ） | 开放题：Claude 3.5 Sonnet **17%** > GPT-4o 9%；MCQ（含拒答选项）：低于随机水平 ⚠️ | [arXiv 2503.00096](https://arxiv.org/abs/2503.00096) |
 | **SciAgentGYM** | 2026 | LLM Agent多步骤科学工具调用：物理/化学/材料/生命科学4域，按步骤数分L1(≤3)/L2(4–7)/L3(≥8)三级难度；生命科学工具依赖性最强 | 259任务/1,134子问题；1,780种领域专属工具 | 任务成功率（%）；有/无工具对比 | GPT-5 **41.3%** > Grok-4-1 40.3% > Claude-Sonnet-4 35.9%（均含工具）；L1:60.6% / L3:30.9%（GPT-5）；生命科学平均 20.2% | [arXiv 2602.12984](https://arxiv.org/abs/2602.12984) |
+| **ScienceAgentBench** | 2024 | LLM Agent数据驱动科学发现：从44篇同行评审论文中提取真实任务，覆盖生物信息学/计算化学/地理信息科学/心理与认知科学4个学科；9位领域专家验证；统一输出为自含Python程序；3种Agent框架对比（Direct Prompting / OpenHands CodeAct / Self-Debug） | 102个任务；44篇论文来源；4个学科（Bioinformatics 27/Comp. Chemistry 20/GIS 27/Psychology 28）；11类子任务（数据可视化45/计算分析38/特征工程20等） | 成功率 SR（%）；CodeBERTScore CBS；有效执行率 VER（%）；API成本（$） | **Self-Debug框架**：o1-preview **42.2%** SR（CBS 88.4，VER 92.2%，$0.636）> Claude-3.5-Sonnet **32.4%**（CBS 86.4，VER 92.2%，$0.057）> Mistral-Large-2 23.5% > GPT-4o 22.6%；**OpenHands CodeAct**：Claude-3.5-Sonnet **21.6%** > GPT-4o 19.6%；**Direct Prompting**：o1-preview **34.3%** > Claude-3.5-Sonnet 17.7%；专家知识仅提升 ~2%；开放权重模型（Llama-3.1）≤14.7% ⚠️ | [arXiv 2410.05080](https://arxiv.org/abs/2410.05080) · [GitHub](https://github.com/OSU-NLP-Group/ScienceAgentBench) |
 
 **任务类型**：多步工具调用 + 推理（自然语言任务描述 → 工具序列执行 → 结构化结论）。
 
@@ -91,6 +92,31 @@ output_sciagent = {
     "final_answer": "TP53 在哺乳动物中有 55.5% 的高保守残基，集中于 DNA 结合域（残基 102–292）",
     "task_success": True,
     # 生命科学域是最难领域：平均成功率仅 20.2%（全域 GPT-5 SOTA 41.3%）
+}
+
+# ── 示例④ ScienceAgentBench：数据驱动科学发现（Self-Debug 框架）──────────
+input_sciagentbench = {
+    "task":       ("Train a multitask model on the ClinTox dataset to predict a drug's "
+                   "toxicity and FDA approval status. Save test set predictions to CSV."),
+    "domain":     "Computational Chemistry",
+    "subtasks":   ["Feature Engineering", "Deep Learning"],
+    "dataset":    "clintox/",           # 含 train/test CSV
+    "domain_knowledge": ("ClinTox: 1491 drug compounds, two binary classification tasks. "
+                         "Use ECFP featurization + MultitaskClassifier from deepchem."),
+    "output":     "pred_results/clintox_test_pred.csv",
+}
+
+output_sciagentbench = {
+    "generated_program": "clintox_nn.py",   # 统一输出为自含 Python 文件
+    "valid_execution": True,                # VER: 程序可执行
+    "success": True,                        # SR: 通过 eval_script 验证
+    "codebert_score": 0.864,                # CBS: 代码语义相似度
+    "api_cost": 0.057,                      # Claude-3.5-Sonnet Self-Debug 成本
+    # 三种 Agent 框架对比（Claude-3.5-Sonnet）
+    # Direct Prompting: SR 17.7% / VER 51.0%  → 最便宜但成功率低
+    # OpenHands CodeAct: SR 21.6% / VER 87.3% → 交互式但成本高
+    # Self-Debug:        SR 32.4% / VER 92.2% → 最佳性价比 ✓
+    # o1-preview Self-Debug: SR 42.2% 但成本 $0.636（10x+）
 }
 ```
 

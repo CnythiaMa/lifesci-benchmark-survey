@@ -165,6 +165,7 @@ leaderboard/
 | **BioAgent Bench** | 2025 | 生物信息学Agent+生物安全风险评估 | 多Agent任务+风险任务 | 能力分，安全通过率 | 含生物安全维度的罕见评测 | [EmergentMind](https://www.emergentmind.com/topics/bioagent-bench) |
 | **BixBench** | 2025 | 真实生信分析多步骤计算推理 | ~205题（60个Jupyter capsule） | LLM自动评分，MCQ准确率 | 开放题：Claude 3.5 Sonnet **17%** > GPT-4o 9%；MCQ低于随机 ⚠️ | [arXiv 2503.00096](https://arxiv.org/abs/2503.00096) |
 | **SciAgentGYM** | 2026 | 多步骤科学工具调用（物理/化学/材料/生命科学） | 259任务；1,780种工具 | 任务成功率 SR | GPT-5 **41.3%**；Grok-4-1 40.3%；生命科学平均 20.2% | [arXiv 2602.12984](https://arxiv.org/abs/2602.12984) |
+| **ScienceAgentBench** | 2024 | LLM Agent数据驱动科学发现：4学科（生信/计算化学/GIS/心理认知）；3种框架（Direct/OpenHands/Self-Debug） | 102任务；44篇论文来源；11类子任务 | SR, CBS, VER, 成本 | Self-Debug: o1-preview **42.2%** > Claude-3.5-Sonnet **32.4%**；Direct: o1-preview **34.3%** | [arXiv 2410.05080](https://arxiv.org/abs/2410.05080) · [GitHub](https://github.com/OSU-NLP-Group/ScienceAgentBench) |
 | **LAB-Bench** | 2024 | 实验室生物学研究基础能力（LitQA2/DbQA/SeqQA/ProtocolQA/CloningScenarios） | 2,457题（8类30子任务）；FutureHouse | Precision / Coverage | Claude 3.5 Sonnet最优；人类 ~69% > 模型 ~40–50% | [arXiv 2407.10362](https://arxiv.org/abs/2407.10362) |
 | **FrontierScience** | 2025 | PhD级跨学科推理（Olympiad+Research轨） | 700+题；42奥赛金牌+45博士出题 | Olympiad准确率，Research部分分 | GPT-5.2: Olympiad **77%** / Research **25%** | [OpenAI](https://openai.com/index/frontierscience/) |
 | **BABE** | 2026 | 基于论文的生物实验推理（Q1→Q2→Q3三元组） | 12生物子领域三元组 | 平均分(0–100)，Convergence Score | GPT-5.1-high **52.31** | [arXiv 2602.05857](https://arxiv.org/html/2602.05857v1) |
