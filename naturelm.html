@@ -1,0 +1,627 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>NatureLM 论文脑图</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html, body { width: 100%; height: 100%; background: #ffffff; }
+    #toolbar {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      display: flex; align-items: center; gap: 10px;
+      padding: 8px 16px;
+      background: rgba(255,255,255,0.95);
+      backdrop-filter: blur(8px);
+      border-bottom: 1px solid #d0d7de;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+    #toolbar h1 { font-size: 14px; font-weight: 600; color: #1a1a1a; white-space: nowrap; }
+    #toolbar .sep { flex: 1; }
+    #toolbar button {
+      padding: 4px 10px; border-radius: 6px; border: 1px solid #d0d7de;
+      background: #f6f8fa; color: #1a1a1a; font-size: 12px; cursor: pointer;
+    }
+    #toolbar button:hover { background: #e9ecef; }
+    #toolbar a {
+      padding: 4px 10px; border-radius: 6px; border: 1px solid #d0d7de;
+      background: #f6f8fa; color: #1a1a1a; font-size: 12px; text-decoration: none;
+    }
+    #mm-svg { width: 100%; height: calc(100vh - 42px); margin-top: 42px; background: #ffffff; }
+    /* 覆盖 markmap 默认深色文字 */
+    #mm-svg text { fill: #1a1a1a !important; }
+    #mm-svg a { fill: #0969da !important; }
+  </style>
+</head>
+<body>
+
+<div id="toolbar">
+  <h1>NatureLM 论文脑图</h1>
+  <span class="sep"></span>
+  <button id="btn-fit">适应屏幕</button>
+  <button id="btn-expand">全展开</button>
+  <button id="btn-expand-one">多展开一级</button>
+  <button id="btn-collapse-one">收起一级</button>
+  <button id="btn-collapse">收起到一级</button>
+  <a href="README.md">← README</a>
+</div>
+
+<svg id="mm-svg"></svg>
+
+<!-- markdown 内容：type=text/plain 不会被浏览器执行，反引号等特殊字符安全 -->
+<script id="md-content" type="text/plain">
+---
+markmap:
+  initialExpandLevel: 2
+  colorFreezeLevel: 2
+  maxWidth: 400
+---
+
+# NatureLM
+## 引言
+### Foundation models的
+### science任务中的挑战
+### 现有方法【各有缺陷】
+- 领域特定模型
+- 微调通用模型
+- scientific数据增强的LLMs
+- 特定scientific模块集成
+## Method
+### data
+- Pre-train data
+  - 包含：文本、小分子、蛋白质、材料、DNA 和 RNA 等序列数据
+    - 小分子->SMILES
+    - 蛋白质、DNA、RNA->FASTA
+      - 序列->单个units
+        - 蛋白质->氨基酸
+        - DNA/RNA->核苷酸
+    - 晶体材料->展平为序列
+      - 包含化学组成和空间群信息
+  - 引入特定scientific实体token->区分text和scientific实体
+    - 如：<mol>...小分子...<mol>
+  - token级统计
+  - 数据类型
+    - 单域sequence
+      - 纯文本text、小分子SMILES、蛋白质FASTA等
+    - 跨域sequence
+      - interleaved sequence
+        - 小分子/蛋白质 + text
+          - 来源scientific文献
+        - 连接文本信息和Scientific数据
+      - parallel text和scientific 实体
+        - 特定蛋白/小分子 + 描述性信息【PubChem、UniProt、NCBI等】+材料相关信息【带隙等属性信息->text】
+        - science事实与其文本对应物对齐
+      - 通过中心法则连接的DNA与蛋白质
+        - DNA【遵循分子生物学的中心法则，识别可以被转录并翻译成蛋白质的片段】- 替换为对应蛋白质
+        - 建立遗传蓝图与其功能蛋白质产物之间的直接联系
+- Post-train data
+  - 策划约 510 万个指令-响应对
+  - 涵盖6个领域
+    - 小分子
+    - 蛋白质
+    - 材料
+    - DNA
+    - RNA
+    - text
+  - >60个子任务：包括分子优化、抗体设计、引导 RNA 设计等任务。
+### 模型架构
+- 基础模型
+  - Llama 3 8B
+  - Mixtral 7*8B
+- 基于Llama结构设计的1B模型
+- 主要采用监督微调 (SFT) 方式。
+- 探索使用强化学习 (RLHF) 提升模型性能。
+### Continued pre-train
+- 引入的新scientific实体token的权重为随机初始化，与原有已训练的token不匹配->模型训练不稳定
+- 2阶段pre-train
+  - 1:只训练新scientific实体token【model参数冻结】
+  - 2:新+原有一起训练
+- Loss，model大，Loss降低多
+### Post-train
+- SFT
+  - 在模型优化过程中，仅在序列的response部分计算训练损失
+- RLHF
+## 小分子
+### unconditional 分子生成
+- 过程
+  - 输入：特殊token <mol>
+  - 输出：SMILES
+- 有效性
+  - SMILES是否可以使用RDKit转换成分子
+    - RDKit：RDKit是一个开源的化学信息学工具包，可以将SMILES字符串转换为分子对象【分子的原子信息、键信息、立体化学信息、分子的二维和三维坐标等】
+  - 模型规模增大，有效性表现提升
+- 唯一性
+  - 规模增大，唯一性表现提升
+### property->molecule 生成 
+- 指定单属性生成
+  - 属性指标：
+    - 药物样性的定量估算（QED）
+    - 氢键受体（HBA）
+    - 氢键供体（HBD）
+    - sp3杂化碳的比例（FSP3）
+    - 可旋转键（RotBonds）
+    - 拓扑极性表面积（TPSA）
+  - 计算：RDKit
+  - Metric
+    - Spearman相关系数
+      - 相关性>0.8，生成的分子与输入之间的一致性
+    - 正确比例
+- 多属性生成
+  - 案例中，大多数生成的化合物的QED和TPSA值【target】都集中在期望的属性附近
+### SMILES<—>IUPAC 翻译
+- IUPAC（International Union of Pure and Applied Chemistry chemica）：系统命名化学物质的方法，规定从有机到无机、从分子到高分子及各方面化学术语
+- 评估数据集：NC-I2S和NC-S2I
+- 性能对比
+  - NatureLM（8x7B)效果最好—>scientific数据训练的必要性、更大模型的优势
+### target-aware hit 生成和优化
+- 基于目标蛋白sequence生成小分子
+  - 药物发现hit identification阶段
+  - 目的：发现能与目标蛋白质发生特定相互作用的化学实体
+  - 对比：
+    - Sequence生成： TamGen
+    - 3D 基于Dif fusion：TargetDiff
+    - 3-D 自回归：Pocket2Mol
+  - 评价指标：
+    - Docking分数
+      - AutoDock Vina【Vina】
+    - QED
+    - 合成可行性分数（SAS）
+    - 合成多样性
+    - Log P
+    - 满足五规则化合物的百分比
+  - NatureLM在Vina、QED、SAS超越基线，有效
+- 基于目标蛋白sequence生成分子片段
+  - 药物开发的lead优化结算
+  - 目的：仔细检查和refine分子结构，以增强效果和精确度
+  - 验证：3篇文献中task【解决化合物优化的问题】，输入目标蛋白+需优化的backbone
+  - 效果更优【docking分数】
+### Text-guided binding affinity 优化
+- 输入：target name+已知与目标有affinity分子
+- 目标：生成有更高affinity分子
+- NatureLM可以通过对其化学成分进行小幅修改，成功提高分子的结合亲和力
+  - 相较GPT-4:更多、且效果更好
+  - 生成效果更好新分子
+    - 在探索化学空间和发现新药方面有潜力
+### Text-guided代谢和分布优化
+- 代谢酶抑制优化
+  - 目标：减少对五种关键代谢酶的抑制
+  - 模型大性能好，提升不显著，有优化空间
+- 血脑屏障渗透性（BBB）优化【药物分布的关键因素】
+  - 8B>8*7B>1B
+  - 1\8B相同架构【llama，dense模型，大词汇量】，8*7B【MOE，词汇量相对小】
+### 逆向合成
+- 目标：以商业可用化合物作为起点，确定目标分子的合成路线—>发现和制造功能性小分子
+- 数据集:USPTO-50K
+- 1B-7*8B均最优，在Scientific数据训练必要性
+## 蛋白质
+### unconditional 蛋白质生成
+- 过程
+  - 输入：特殊token 
+  - 输出：蛋白sequence
+- 评估【无金标准】
+  - 可折叠性
+    - pLDDT分数
+  - 序列长度
+  - 多样性
+- NatureLM8*7B最佳【all】，较ProLLAMA【蛋白微调LLM】表现更好【无长度限制pLDDT分数更高！】
+### Text- guided蛋白质生成
+- 关注属性
+  - 稳定性
+    - 生成表现出stability的蛋白质序列
+    - 随模型增大，稳定的序列比例增长，在NatureLM 8x7B中有显著的峰值
+  - 溶解性
+    - 生成soluble/insoluble蛋白质序列
+    - 模型增大，可溶性与不可溶性分数分布之间的分离变得更加明显，重叠减少
+- 评估
+  - 基于蛋白质foundation模型SFM-Protein 微调后作为oracle model
+### 抗原结合CDR-H3设计
+- 数据：RAbD基准数据集
+- 质量评估：氨基酸回收率（AAR）分数
+### 蛋白质描述生成
+- 背景：Nature蛋白的Function大多未知，影响后续的利用—>生成annotation
+- 数据
+  - 来源NCBI：成对蛋白质sequence — 人类可读annotation
+  - Train：历史数据
+  - Test：近4个月数据
+- 质量评估
+  - 指标：Rouge-L
+  - 模型大，效果好
+  - 8*7B能成功识别蛋白质的同源物和功能
+## 材料
+### Fine-tuned 专门NatureLM，基于材料化学式生成其晶体结构【Ma-NatureLM】——>评估准确性、稳定性
+### Unconditional 材料生成
+- 过程
+  - 输入：特殊token <mol>
+  - 输出：SMILES
+- 评估SMACT【工具包？】有效性
+  - 使用Ma-NatureLM预测晶体结构
+    - 使用MatterSim评估晶体结构的energy above hull（ehull）
+  - 稳定材料（ehull<0.1）比例
+    - 模型大，效果好
+### Composition->材料生成
+- 目标：生成包含特定元素材料
+- 评估：
+  - SMACT有效性、稳定性、精确度、novelty【未在instruction tuning data出现的unique材料】
+  - 精确、novelty接近100%；模型大，稳定高
+### Bulk modulus ->材料生成
+- Bulk modulus：衡量物质抵抗体积压缩的能力
+- 目标：生成具有指定Bulk modulus的材料
+- 评估
+  - SMACT有效性、稳定性、精确度【compare所有生成材料，Bulk modulus在指导值10%以内】、novelty
+  - 模型大，有效性、稳定性提升
+  - 模型大，分布与理想线性对角线更加吻合
+  - 新材料的数量随着生成的总数增加而增加—>模型生成能力强
+### 材料晶体结构预测
+- 以自回归方式生成3-D结构
+- 意义：将LLMs的序列建模能力与晶体结构的序列表示对齐
+  - 捕捉材料结构中固有的复杂依赖性和模式，从而可能实现更准确、高效地生成稳定的晶体构型
+- 材料+3D结构 —> 1-D序列
+  - 1、展平化学式
+    - 根据元素计数重复每个元素
+    - A2B3—>A A B B B
+  - 2、增加space group信息
+    - 添加特殊token<sg>和<sgn>【N：space group number】
+  - 3、包含坐标信息
+    - 使用<coord> token表示坐标开始
+    - 晶体参数展平为9个float number
+    - 部分院子坐标展平为float number
+    - 数字保留4位小数，使用符号tokenized
+    - -3.1416 —> '3' '.' '1' '4' '1' '6'
+- 数据
+  - 训练
+    - 具有结构信息材料数据库
+      - Material Project、NOMAD、OQMD
+    - 移除重复项、在test数据中出现的内容
+    - 650万个样本
+  - 微调
+    - 在每个benchmark微调模型
+    - 缓解训练数据和benchmark数据的分布不同
+  - 测试
+    - 论文
+    - MP-20、Perov-5、MPTS-52
+- 评估
+  - 1B与其他最先进方法持平/更好
+    - 匹配率高、RMSE低
+    - 模型有效捕捉晶体结构中原子的复杂空间排列
+- future
+  - 利用并结合更先进的方法【如MatterGen 】进行结构生成
+## 核苷酸
+### Genome包含大量关于protein- coding 基因和控制表达的DNA/RNA
+### Unconditional RNA生成
+- 过程
+  - 输入：特殊token <rna>
+  - 输出：最长1024个核苷酸的RNA序列
+- 质量评估
+  - 最小自由能（MFE）
+    - 通过RNAfold
+    - 值越低，表明RNA二级结构更稳定
+- 对每个生成序列，生成对照数据
+  - 乱序序列：随机打乱核苷酸创建新序列，保留原始核苷酸组成和长度
+    - 但可能破坏了任何inherent structural motifs
+  - 随机序列：生成长度相同的完全随机序列，每个位置都以相等的概率从四种核苷酸（A、G、C、U）中独立采样
+    - 无设计结构和组成bias
+- 模型大，MFE更小【结构更稳定】，可以生成更多样化的RNA结构和功能
+  - RNAcentral：综合性RNA库
+### Guid RNA（gRNA） 设计
+- gRNA：CRISPR-Cas9基因编辑技术中的一个关键元素，对于将Cas9酶引导至基因组内计划进行遗传修饰的精确位置至关重要
+- task
+  - 为给定的DNA序列设计gRNA
+  - 从2个candidates中选择更有效的gRNA
+- 有效标准
+  - 1）长度在17-24个核苷酸之间
+  - 2）与给定DNA序列中的一个序列匹配
+  - 3）DNA模版中匹配的序列后跟一个“NGG”序列【Protospacer Adjacent Motif (PAM)】
+  - 强大生成能力
+    - 准确靶向指定的DNA同时保持了PAM序列特征
+  - 评估gRNA有效性表现出色
+    - 能够从一对给定的gRNA中选择更有效的
+### 蛋白质 binding RNA 设计
+- 背景
+  - RNA结合蛋白（RBPs），通过与RNA相互作用在调节基因表达中发挥关键作用
+  - RNA decoys操纵RBPs与RNA之间的相互作用
+- 过程：给定蛋白质，创建与之结合的RNA分子
+  - Binding和None Binding分别取得最高值和最低值：说明分类器的可靠性
+  - Unconditional生成：表明随机RNA序列由于RNA的内在属性有中等几率被预测为结合物，但缺乏通过条件化实现的特异性
+  - NatureLM：给定蛋白条件时，分数上升，有效
+## 预测
+### 小分子预测
+- 任务
+  - 1）能否穿过BBBP
+  - 2）能否与BACE受体结合
+  - 3）12个靶点相关分子毒性
+- 评估
+  - 模型大，效果好；与最先进模型仍有差距
+### 蛋白质预测
+- 任务
+  - 1）solubility
+  - 2）stability
+  - protein- protein interaction（PPI）
+    - 3）for human
+    - 4）for yeast proteins
+- 评估
+  - 与task- specific model表现competitively
+    - NatureLM训练策略有效性【单一模型能跨多种蛋白质理解和泛化，foundational model】
+### DNA预测
+- 任务
+  - 启动子（promoters）和转录因子结合位点识别
+- 评估
+  - 与最先进技术之间存在性能差距
+    - 模型大，效果好—>有进一步发展的潜力:更大模型可能有效捕捉人类基因调控的复杂regulatory motifs
+## 提升性能策略
+### Reinforcement enhance NatureLM
+- 在RLHF在使用
+- 目标：优化小分子属性
+  - BBBP
+  - BACE
+  - LogP
+  - Donor
+  - QED
+  - CYP1A2
+  - CYP2C9
+  - CYP2D6
+  - CYP3A4
+- 方法：使用偏好数据（Accepted/Rejected 响应）训练DPO算法
+- 效果
+  - 9个属性性能均有所提升【未引入新数据，而是数据重新格式化为偏好数据】
+- Future：在RLHF中即时生成数据，并利用额外的奖励模型来评估新生成分子的性质，从而创建更好的基于偏好的数据
+### 针对逆合成 fine-tune
+- 数据：Pistachio反应库（15M条reactions）
+  - 预处理
+    - 移除无效/重复reactions
+    - 使用root- aligned SMILES format
+  - train：3.1M
+  - test：34,000
+- 效果：
+  - 与行业领先模型表现相当
+### 针对Matbench fine-tune
+- task：
+  - 固体材料属性预测（expt_gap/is_metal/glass）
+  - 【Matbench ：最新机器学习算法 benchmark】
+- 效果：
+  - 取得state-of-art/competitively
+## Text能力
+### Case study
+- CRISPR基因编辑
+  - 能很好地理解CRISPR，并能够有效地分析常用CRISPR工具的优势和劣势
+- 癌症免疫治疗
+  - 对用于癌症治疗的现有检查点抑制剂有所了解，并对其作用机制提供了准确的解释
+- 药物发现
+  - 展示了对于药物发现基本原理的理解
+### 对比实验AlpacaEval
+- 评估模型预言能力
+- 指标
+  - general win rate
+  - LC win rate
+- 结论：
+  - scientific数据主导训练导致文本泛化能力有限
+  - 未来需要增加通用文本数据以提升对话能力
+## 消融实验
+### 1）post-train
+- 使用指令微调数据
+### 2）Fine-tune策略
+- 在post-train之前使用continuing pretrian，而非直接从baseline模型微调
+### 效果：
+- w/o text：表示未用指令数据
+  - 1）post-train
+    - ​小模型（1B）：无文本数据时科学任务表现更优
+      - 模型容量有限，可能稀释模型对scientific指令的关注
+    - ​大模型（8B）：文本数据增强后综合性能不降
+      - 较大的模型有足够的容量同时吸收通用基于文本和科学基于指令的数据，而不会对其在科学任务上的表现产生不利影响
+  - 2）Fine-tune
+    - 对照组：直接微调Llama3 8B
+    - ​实验组：继续预训练+科学指令微调
+    - ​结果：实验组在所有任务中显著优于对照组
+### task
+- 小分子
+  - 属性预测
+  - IUPAC->SMILES转换
+  - 逆向合成
+  - 代谢优化
+- 蛋白质
+  - 蛋白质描述生成
+  - CDR-H3生成
+- DNA
+  - 属性预测
+## 讨论
+### 优势
+- 跨域统一Foundation model，支持分子、蛋白、材料、RNA生成/预测等多种下游任务
+- 规模效应：模型越大，任务覆盖率【top1】越高
+### 局限性
+- 文本能力较弱
+- 小样本学习能力弱
+## TamGen
+### 背景
+- 传统药物生成方法局限于特定的药物相关属性，导致生成的分子在实际应用的成功率较低
+- 研究难点
+  - 生成分子时保持其化学合理性和合成可行性
+  - 提高生成分子药理活性和合成可及性之间的平衡
+- 相关工作
+  - GAN
+  - VAE
+  - diffusion
+### 方法
+- Chemical Language Model
+- 【Compound decoder】
+  - 类似GPT的化学语言模型
+  - 训练数据
+    - PubChem中随机采样的1000万个SMILES字符
+  - 自回归训练
+    - 运训在无目标信息的情况下按条件生成化合物
+- protein encoder
+  - 理解target- protein的信息，促进target- aware的drug-like 化合物生成
+  - 采用Transformer架构，编码目标蛋白的结合pocket信息
+  - 设计self- attention 变体，同时捕捉化合物的sequence和geometric信息
+  - cross- attention模块仅在提供目标蛋白【应用阶段】激活
+- context encoder
+  - 基于VAE，编码化合物辅助生成过程
+  - 学习输入数据的概率分布并从其中采样来创建新数据
+  - 确定给定化合物和蛋白质序列对的均值和标准差，并将其添加到蛋白质编码器的输出中，以便在应用期间恢复输入化合物
+- design-refine- test pipeline
+- 【refine阶段可重复多次】
+### 评估
+- 使用CrossDocked2020数据集进行基准测试
+  - 约10万个药物-目标对和100个蛋白质结合pocket
+- 评估指标
+  - 1）靶蛋白结合亲和力【docking】
+  - 2）药物相似度【QED】
+  - 3）分子物理化学特性【Lipiski】
+  - 4）合成可及性【SAS】
+  - 5）分子亲脂性【Log p】
+  - 6）生成分子多样性【diversity】
+- 效果
+  - TamGen名列前茅且效率高
+### 优势/创新点
+- ​1、目标感知分子生成
+  - 采用类似GPT的化学语言模型，实现目标感知的分子生成和化合物优化
+- 2、结合sequence、geometric信息
+  - 支持稳健的化合物生成
+- 3、design-refine-test pipeline
+  - 显著提高了候选化合物的质量和数量，为后续优化提供了有效的锚点
+    - 考虑到生成新化合物的不确定性和实验成本
+    - 未来可考虑：生成内容作为锚点，在库内检索
+- ​4、高效的生成能力
+  - 生成速度比现有方法快85到154,213倍
+- 5、分子质量和可行性提升
+  - 生成的化合物在分子质量和可行性方面表现出色，具有更高的合成可及性和药理活性
+- ​6、针对结核分枝杆菌ClpP蛋白酶的抑制剂设计
+  - 成功生成了14种具有显著抑制活性的候选化合物，其中最有效的化合物的半最大抑制浓度（IC50）为1.9μM
+- ​7、结构活性关系（SAR）研究
+  - 通过合成和验证新合成的化合物，揭示了新的ClpP抑制剂机制，提供了潜在的药物开发方向
+### 缺陷
+- 靶点差异敏感性不足
+- 缺少目标蛋白的结构信息和潜在结合pocket信息
+</script>
+
+<!-- markmap-autoloader 会把 Transformer、Markmap 等挂到 window.markmap -->
+<script src="https://cdn.jsdelivr.net/npm/markmap-autoloader@latest"></script>
+
+<script>
+(async function init() {
+  // 等待 window.markmap.Markmap 就绪（autoloader 可能异步加载子模块）
+  while (!window.markmap || !window.markmap.Markmap || !window.markmap.Transformer) {
+    await new Promise(r => setTimeout(r, 50));
+  }
+
+  const { Transformer, Markmap, loadCSS, loadJS } = window.markmap;
+
+  const md = document.getElementById('md-content').textContent.trim();
+  const transformer = new Transformer();
+  const { root, features } = transformer.transform(md);
+
+  // 加载 markdown 中用到的额外资源（如数学公式字体等）
+  const assets = transformer.getUsedAssets(features);
+  const promises = [];
+  if (assets.styles && loadCSS) promises.push(loadCSS(assets.styles));
+  if (assets.scripts && loadJS) promises.push(loadJS(assets.scripts));
+  await Promise.all(promises);
+
+  // 直接创建实例，拿到引用
+  const svgEl = document.getElementById('mm-svg');
+  window.mm = Markmap.create(svgEl, {
+    initialExpandLevel: 2,
+    colorFreezeLevel: 2,
+    maxWidth: 400,
+  }, root);
+
+  // ---- 节点折叠辅助函数 ----
+  function expandAll(node) {
+    if (!node) return;
+    if (!node.payload) node.payload = {};
+    node.payload.fold = 0;
+    (node.children || []).forEach(expandAll);
+  }
+
+  function collapseToDepth(node, cur, max) {
+    if (!node) return;
+    if (!node.payload) node.payload = {};
+    const hasKids = node.children && node.children.length > 0;
+    node.payload.fold = (hasKids && cur >= max) ? 1 : 0;
+    (node.children || []).forEach(c => collapseToDepth(c, cur + 1, max));
+  }
+
+  // 多展开一级：找当前最浅的折叠层（BFS），展开该层所有节点
+  function expandOneLevel(root) {
+    let minFoldDepth = Infinity;
+    function findMin(node, depth) {
+      if (!node) return;
+      if (node.payload && node.payload.fold === 1) {
+        minFoldDepth = Math.min(minFoldDepth, depth);
+        return; // 不进入折叠节点内部
+      }
+      (node.children || []).forEach(c => findMin(c, depth + 1));
+    }
+    findMin(root, 0);
+    if (minFoldDepth === Infinity) return; // 已全展开
+
+    function unfold(node, depth) {
+      if (!node) return;
+      if (node.payload && node.payload.fold === 1) {
+        if (depth === minFoldDepth) node.payload.fold = 0;
+        return;
+      }
+      (node.children || []).forEach(c => unfold(c, depth + 1));
+    }
+    unfold(root, 0);
+  }
+
+  // 收起一级：找当前最深的展开层（有子节点），折叠该层所有节点
+  function collapseOneLevel(root) {
+    let maxExpandDepth = -1;
+    function findMax(node, depth) {
+      if (!node) return;
+      if (node.payload && node.payload.fold === 1) return; // 折叠节点不往里走
+      const hasKids = node.children && node.children.length > 0;
+      if (hasKids && depth > 0) maxExpandDepth = Math.max(maxExpandDepth, depth);
+      (node.children || []).forEach(c => findMax(c, depth + 1));
+    }
+    findMax(root, 0);
+    if (maxExpandDepth < 0) return; // 已全收起
+
+    function fold(node, depth) {
+      if (!node) return;
+      if (node.payload && node.payload.fold === 1) return;
+      if (depth === maxExpandDepth) {
+        if (!node.payload) node.payload = {};
+        node.payload.fold = 1;
+        return;
+      }
+      (node.children || []).forEach(c => fold(c, depth + 1));
+    }
+    fold(root, 0);
+  }
+
+  function applyAndFit() {
+    window.mm.setOptions({ initialExpandLevel: -1 });
+    window.mm.setData(window.mm.state.data);
+    setTimeout(() => window.mm.fit(), 150);
+  }
+
+  // ---- 按钮绑定 ----
+  document.getElementById('btn-fit').addEventListener('click', () => {
+    window.mm.fit();
+  });
+
+  document.getElementById('btn-expand').addEventListener('click', () => {
+    expandAll(window.mm.state.data);
+    applyAndFit();
+  });
+
+  document.getElementById('btn-expand-one').addEventListener('click', () => {
+    expandOneLevel(window.mm.state.data);
+    applyAndFit();
+  });
+
+  document.getElementById('btn-collapse-one').addEventListener('click', () => {
+    collapseOneLevel(window.mm.state.data);
+    applyAndFit();
+  });
+
+  document.getElementById('btn-collapse').addEventListener('click', () => {
+    collapseToDepth(window.mm.state.data, 0, 1);
+    applyAndFit();
+  });
+})();
+</script>
+
+</body>
+</html>
