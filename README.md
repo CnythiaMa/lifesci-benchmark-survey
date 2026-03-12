@@ -7,6 +7,8 @@
 
 **[→ 打开可交互脑图（节点可展开/收起）](https://cnythiama.github.io/lifesci-benchmark-survey/mindmap.html)**
 
+**[→ NatureLM 论文脑图](https://cnythiama.github.io/lifesci-benchmark-survey/naturelm_mindmap.html)**
+
 > 脑图覆盖全部 7 大领域 / 50+ benchmark，支持缩放、拖拽、节点折叠。需在浏览器中打开（GitHub Pages 托管）。
 
 ## 文件结构
